@@ -1,0 +1,17 @@
+/* context menu icons */
+.icon:before {
+    position: absolute;
+    margin-top: 3px;
+    width: 14px;
+    height: 14px;
+    content: '';
+}
+
+.icon-blue:before { background-color: #6fa8dc; }
+.icon-green:before { background-color: #93c47d; }
+.icon-yellow:before { background-color: #f1c232; }
+.icon-red:before { background-color: #dd7e6b; }
+
+body .scheduler_default_event_inner {
+    padding-left: 7px;
+}

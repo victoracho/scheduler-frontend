@@ -1,0 +1,21 @@
+{
+  "name": "vuejs-scheduler",
+  "version": "0.1.0",
+  "private": true,
+  "license": "SEE LICENSE IN license/LicenseAgreementTrial.pdf",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "daypilot-pro-vue": "https://npm.daypilot.org/daypilot-pro-vue/trial/2024.4.6180.tar.gz",
+    "vue": "^3.3.4",
+    "vue-axios": "^3.5.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.4.0",
+    "vite": "^4.4.11"
+  }
+}
