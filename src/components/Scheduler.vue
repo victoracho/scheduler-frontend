@@ -18,14 +18,15 @@ const config = reactive({
   scale: "Manual",
   cellDuration: 240,
   timeHeaders: [
-    { groupBy: "Month" },
-    { groupBy: "Day", format: "d" },
-    { groupBy: "Hour" },
+    { groupBy: "Month", format: "MMMM yyyy" }, // Agrupamos por mes
+    { groupBy: "Day", format: "dddd d" }, // Agrupamos por día
+    { groupBy: "Cell", format: () => getShiftLabel() }
   ],
   timeline: [],
-  timeRangeSelectedHandling: "Enabled",
   eventHeight: 40,
-  eventWidth: 60,
+  cellWidth: 80, // Ancho de cada celda
+  treeEnabled: false,
+  timeRangeSelectedHandling: "Enabled",
   durationBarVisible: false,
   eventBorderRadius: 20,
   rowMarginTop: 2,
@@ -36,10 +37,15 @@ const config = reactive({
     { title: "Status", width: 50 }
   ],
   onBeforeTimeHeaderRender: function (args) {
-    if (args.header.level === 1) {
+    if (args.header.text == '8 AM') {
+      args.header.text = '☀️ '
+    }
+    if (args.header.text == '12 AM') {
+      args.header.text = '🌄'
     }
   },
   onTimeRangeSelected: async args => {
+    console.log(args)
     const today = DayPilot.Date.today();
     const scheduler = schedulerRef.value?.control;
     const submit = {
@@ -350,7 +356,7 @@ const updateColor = (e, color) => {
   scheduler.events.update(e);
   scheduler.message("Color updated");
 };
-
+//  dependiendo de la hora el time header lo convierte en manana o tarde
 onMounted(() => {
   const scheduler = schedulerRef.value?.control
   getReservations()
