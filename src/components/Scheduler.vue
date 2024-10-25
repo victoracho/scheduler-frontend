@@ -299,21 +299,23 @@ const schedulerRef = ref(null);
 const currentUser = ref(null);
 const deal_id = ref(null);
 const crm = ref(null);
+
+
+
 const previous = () => {
   config.startDate = config.startDate.addMonths(-1);
   config.days = config.startDate.daysInMonth();
-
-  let timeline = [];
-  config.timeline = timeline;
-  const totalDays = config.startDate.daysInMonth()
-  for (let i = 0; i < totalDays; i++) {
-    let day = new DayPilot.Date(config.startDate).addDays(i);
-    timeline.push({ start: day.addHours(0), end: day.addHours(8), text: "Mañana" });
-    timeline.push({ start: day.addHours(8), end: day.addHours(16), text: "Tarde" });
-  }
-  config.timeline = timeline;
+  generateTimeline();
 
 };
+
+const next = () => {
+  config.startDate = config.startDate.addMonths(1);
+  config.days = config.startDate.daysInMonth();
+
+  generateTimeline();
+};
+
 const generateTimeline = () => {
   let timeline = [];
   const totalDays = config.startDate.daysInMonth()
@@ -355,21 +357,6 @@ const sendReservation = async () => {
       scheduler.message("An unexpected error occured!");
     })
 }
-
-const next = () => {
-  config.startDate = config.startDate.addMonths(1);
-  config.days = config.startDate.daysInMonth();
-
-  let timeline = [];
-  config.timeline = timeline;
-  const totalDays = config.startDate.daysInMonth()
-  for (let i = 0; i < totalDays; i++) {
-    let day = new DayPilot.Date(config.startDate).addDays(i);
-    timeline.push({ start: day.addHours(0), end: day.addHours(8), text: "Mañana" });
-    timeline.push({ start: day.addHours(8), end: day.addHours(16), text: "Tarde" });
-  }
-  config.timeline = timeline;
-};
 
 const updateColor = (e, color) => {
   const scheduler = schedulerRef.value?.control;
