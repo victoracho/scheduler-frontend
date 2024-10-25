@@ -25,7 +25,7 @@ const config = reactive({
   timeline: [],
   eventHeight: 40,
   cellWidth: 80, // Ancho de cada celda
-  treeEnabled: false,
+  //treeEnabled: false,
   timeRangeSelectedHandling: "Enabled",
   durationBarVisible: false,
   eventBorderRadius: 20,
@@ -302,12 +302,23 @@ const crm = ref(null);
 const previous = () => {
   config.startDate = config.startDate.addMonths(-1);
   config.days = config.startDate.daysInMonth();
+
+  let timeline = [];
+  config.timeline = timeline;
+  const totalDays = config.startDate.daysInMonth()
+  for (let i = 0; i < totalDays; i++) {
+    let day = new DayPilot.Date(config.startDate).addDays(i);
+    timeline.push({ start: day.addHours(0), end: day.addHours(8), text: "Mañana" });
+    timeline.push({ start: day.addHours(8), end: day.addHours(16), text: "Tarde" });
+  }
+  config.timeline = timeline;
+
 };
 const generateTimeline = () => {
   let timeline = [];
   const totalDays = config.startDate.daysInMonth()
   for (let i = 0; i < totalDays; i++) {
-    let day = new DayPilot.Date("2024-10-01").addDays(i);
+    let day = new DayPilot.Date(config.startDate).addDays(i);
     timeline.push({ start: day.addHours(0), end: day.addHours(8), text: "Mañana" });
     timeline.push({ start: day.addHours(8), end: day.addHours(16), text: "Tarde" });
   }
@@ -348,6 +359,16 @@ const sendReservation = async () => {
 const next = () => {
   config.startDate = config.startDate.addMonths(1);
   config.days = config.startDate.daysInMonth();
+
+  let timeline = [];
+  config.timeline = timeline;
+  const totalDays = config.startDate.daysInMonth()
+  for (let i = 0; i < totalDays; i++) {
+    let day = new DayPilot.Date(config.startDate).addDays(i);
+    timeline.push({ start: day.addHours(0), end: day.addHours(8), text: "Mañana" });
+    timeline.push({ start: day.addHours(8), end: day.addHours(16), text: "Tarde" });
+  }
+  config.timeline = timeline;
 };
 
 const updateColor = (e, color) => {
