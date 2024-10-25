@@ -252,8 +252,19 @@ const config = reactive({
         onClick: args => {
           const e = args.source;
           const scheduler = schedulerRef.value?.control;
-          scheduler.events.remove(e);
-          scheduler.message("Deleted.");
+
+
+
+          const confirmDelete = confirm("Are you sure you want to delete?");
+            if (!confirmDelete) {
+              args.preventDefault();
+            } else {
+              deleteReservation(args.source.data.id)
+              scheduler.events.remove(e);
+              scheduler.message("Deleted.");
+            }
+
+
         }
       },
       {
@@ -341,7 +352,7 @@ const updateApartment = async (id, status) => {
 
 const sendReservation = async () => {
   const scheduler = schedulerRef.value?.control;
-  axios.post('http://localhost/scheduler-backend/sendEvent.php',
+  axios.post('http://localhost/scheduler-backend/sendReservation.php',
     {
       event: '',
       user: currentUser.value,
@@ -364,6 +375,14 @@ const updateColor = (e, color) => {
   scheduler.events.update(e);
   scheduler.message("Color updated");
 };
+
+//delete reservation
+const deleteReservation = async (id) => {
+  const response = await axios.get('http://localhost/scheduler-backend/deleteReservation.php?id=' + id)
+  const data = response.data
+  getReservations();
+};
+
 //  dependiendo de la hora el time header lo convierte en manana o tarde
 onMounted(() => {
   const scheduler = schedulerRef.value?.control
