@@ -112,7 +112,7 @@ const config = reactive({
     }
     form = [
       {
-        type: 'radio',
+        type: 'select',
         id: 'visitors',
         name: 'Select the number of visitors',
         options: [
@@ -138,8 +138,8 @@ const config = reactive({
           },
         ],
       },
+      { name: "Commentary", id: "comentary" },
     ];
-    modal = await DayPilot.Modal.form(form);
     scheduler.clearSelection();
     if (modal.canceled) {
       return;
@@ -167,8 +167,43 @@ const config = reactive({
     console.log(args)
   },
   eventClickHandling: "Enabled",
-  onEventClicked: args => {
-    args.control.message("Event clicked: " + args.e.data.text);
+  onEventClicked: async args => {
+    //args.control.message("Event clicked: " + args.e.data.text);
+    //EDITAR RESERVA
+    let form = [
+      { name: "Name", id: "name" },
+      {
+        type: 'select',
+        id: 'visitors',
+        name: 'Select the number of visitors',
+        options: [
+          {
+            name: '1',
+            id: '1',
+          },
+          {
+            name: '2',
+            id: '2',
+          },
+          {
+            name: '3',
+            id: '3',
+          },
+          {
+            name: '4',
+            id: '4',
+          },
+          {
+            name: '5',
+            id: '5',
+          },
+        ],
+      },
+      { name: "Start Date", id: "start", type: 'datetime' },
+      { name: "End Date", id: "end", type: 'datetime' },
+      { name: "Commentary", id: "comentary" },
+    ];
+    let modal = await DayPilot.Modal.form(form);
   },
   eventHoverHandling: "Disabled",
   treeEnabled: true,
@@ -236,7 +271,7 @@ const config = reactive({
   onBeforeEventRender: args => {
     args.data.backColor = args.data.color;
     args.data.borderColor = "darker";
-    args.data.fontColor = "#ffffff";
+    args.data.fontColor = "#000000";
     args.data.areas = [
       {
         top: 10,
@@ -267,11 +302,19 @@ const config = reactive({
     items: [
       {
         text: "Delete",
-        onClick: args => {
+        onClick: async args => {
           const e = args.source;
           const scheduler = schedulerRef.value?.control;
-          scheduler.events.remove(e);
-          scheduler.message("Deleted.");
+
+
+          const modal = await DayPilot.Modal.confirm("Are you sure you want to delete this reservation?");
+          if (modal.canceled) {
+            return;
+          } else {
+            deleteReservation(args.source.data.id)
+            scheduler.events.remove(e);
+            scheduler.message("Deleted.");
+          }
         }
       },
       {
@@ -365,7 +408,7 @@ const updateApartment = async (id, status) => {
 
 const sendReservation = async (event) => {
   const scheduler = schedulerRef.value?.control;
-  axios.post('http://localhost/scheduler-backend/sendEvent.php',
+  axios.post('http://localhost/scheduler-backend/sendReservation.php',
     {
       event: event,
       user: currentUser.value,
@@ -389,6 +432,12 @@ const updateColor = (e, color) => {
   scheduler.message("Color updated");
 };
 
+//delete reservation
+const deleteReservation = async (id) => {
+  const response = await axios.get('http://localhost/scheduler-backend/deleteReservation.php?id=' + id)
+  const data = response.data
+  getReservations();
+};
 //  dependiendo de la hora el time header lo convierte en manana o tarde
 onMounted(async () => {
   const scheduler = schedulerRef.value?.control
