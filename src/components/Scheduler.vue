@@ -89,16 +89,9 @@ const config = reactive({
     // en caso de que el rango de fechas esta bien, se envian formularios
     // lleno un formulario por partes, para tener el cuerpo de la reservacion
     let form = [
-      { name: "Name", id: "name" },
-    ];
-    let modal = await DayPilot.Modal.form(form);
-    scheduler.clearSelection();
-    if (modal.canceled) {
-      return;
-    }
-    form = [
+      { name: "Name", id: "name"},
       {
-        type: 'radio',
+        type: 'select',
         id: 'visitors',
         name: 'Select the number of visitors',
         options: [
@@ -124,12 +117,14 @@ const config = reactive({
           },
         ],
       },
+      { name: "Commentary", id: "comentary"},
     ];
-    modal = await DayPilot.Modal.form(form);
+    let modal = await DayPilot.Modal.form(form);
     scheduler.clearSelection();
     if (modal.canceled) {
       return;
     }
+
   },
   eventMoveHandling: "Update",
   separators: [{ color: "red", location: new DayPilot.Date(), width: 5 }],
@@ -153,8 +148,55 @@ const config = reactive({
     console.log(args)
   },
   eventClickHandling: "Enabled",
-  onEventClicked: args => {
-    args.control.message("Event clicked: " + args.e.data.text);
+  onEventClicked: async args => {
+    //args.control.message("Event clicked: " + args.e.data.text);
+    //EDITAR RESERVA
+
+
+    let form = [
+      { name: "Name", id: "name" },
+      {
+        type: 'select',
+        id: 'visitors',
+        name: 'Select the number of visitors',
+        options: [
+          {
+            name: '1',
+            id: '1',
+          },
+          {
+            name: '2',
+            id: '2',
+          },
+          {
+            name: '3',
+            id: '3',
+          },
+          {
+            name: '4',
+            id: '4',
+          },
+          {
+            name: '5',
+            id: '5',
+          },
+        ],
+      },
+      { name: "Start Date", id: "start" , type: 'datetime'},
+      { name: "End Date", id: "end" , type: 'datetime'},
+      { name: "Commentary", id: "comentary"},
+
+    ];
+
+
+
+
+
+    let modal = await DayPilot.Modal.form(form);
+
+
+
+
   },
   eventHoverHandling: "Disabled",
   treeEnabled: true,
