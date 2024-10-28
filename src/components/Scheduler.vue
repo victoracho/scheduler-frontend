@@ -218,7 +218,7 @@ const config = reactive({
   onBeforeEventRender: args => {
     args.data.backColor = args.data.color;
     args.data.borderColor = "darker";
-    args.data.fontColor = "#ffffff";
+    args.data.fontColor = "#000000";
     args.data.areas = [
       {
         top: 10,
@@ -249,22 +249,19 @@ const config = reactive({
     items: [
       {
         text: "Delete",
-        onClick: args => {
+        onClick: async args => {
           const e = args.source;
           const scheduler = schedulerRef.value?.control;
 
 
-
-          const confirmDelete = confirm("Are you sure you want to delete?");
-            if (!confirmDelete) {
-              args.preventDefault();
-            } else {
-              deleteReservation(args.source.data.id)
-              scheduler.events.remove(e);
-              scheduler.message("Deleted.");
-            }
-
-
+          const modal = await DayPilot.Modal.confirm("Are you sure you want to delete this reservation?");
+          if (modal.canceled) {
+            return;
+          } else {
+            deleteReservation(args.source.data.id)
+            scheduler.events.remove(e);
+            scheduler.message("Deleted.");
+          }
         }
       },
       {
