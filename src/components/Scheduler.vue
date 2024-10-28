@@ -90,6 +90,20 @@ const config = reactive({
     // lleno un formulario por partes, para tener el cuerpo de la reservacion
     let form = [
       { name: "Name", id: "name" },
+      {
+        type: 'date',
+        id: 'from',
+        name: 'Date From',
+        value: '28/10/2025',
+        dateFormat: 'd/M/yyyy',
+      },
+      {
+        type: 'date',
+        id: 'to',
+        name: 'Date To',
+        value: '28/10/2025',
+        dateFormat: 'd/M/yyyy',
+      },
     ];
     let modal = await DayPilot.Modal.form(form);
     scheduler.clearSelection();
