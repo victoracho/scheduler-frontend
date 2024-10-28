@@ -1,7 +1,7 @@
 <template>
   <div class="buttons">
-    <button id="previous" v-on:click="previous">Previous</button>
-    <button id="next" v-on:click="next">Next</button>
+    <a class="previous" v-on:click="previous">Previous</a>
+    <a class="next" v-on:click="next">Next</a>
   </div>
   <br>
   <DayPilotScheduler :config="config" ref="schedulerRef" />
@@ -9,7 +9,7 @@
 
 <script setup>
 import { DayPilot, DayPilotScheduler } from 'daypilot-pro-vue';
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, onUpdated, nextTick } from 'vue';
 import axios from 'axios'
 
 const config = reactive({
@@ -159,6 +159,11 @@ const config = reactive({
   eventHoverHandling: "Disabled",
   treeEnabled: true,
   onBeforeCellRender: (args) => {
+    if (args.cell.start < DayPilot.Date.today()) {
+      args.cell.areas = [
+        { left: 0, right: 0, top: 0, bottom: 0, style: "background-image: linear-gradient(135deg, #ddd 10%, transparent 10%, transparent 50%, #ddd 50%, #ddd 20%, transparent 70%, transparent); background-size: 10px 10px;" }
+      ];
+    }
     let resources = config.resources;
     let allResources = [];
     resources.forEach(item => {
@@ -175,7 +180,6 @@ const config = reactive({
   onBeforeRowHeaderRender: args => {
     const today = DayPilot.Date.today();
     // Comparar la fecha de fin del evento con la fecha de hoy
-
     if (args.row.data.status === "locked") {
       args.row.columns[2].areas = [
         {
@@ -300,8 +304,6 @@ const currentUser = ref(null);
 const deal_id = ref(null);
 const crm = ref(null);
 
-
-
 const previous = () => {
   config.startDate = config.startDate.addMonths(-1);
   config.days = config.startDate.daysInMonth();
@@ -312,7 +314,6 @@ const previous = () => {
 const next = () => {
   config.startDate = config.startDate.addMonths(1);
   config.days = config.startDate.daysInMonth();
-
   generateTimeline();
 };
 
@@ -333,17 +334,26 @@ const getReservations = async () => {
   config.resources = data.buildings
   config.events = data.reservations
 }
+
+const scrollToToday = async () => {
+  const scheduler = schedulerRef.value?.control;
+  const today = DayPilot.Date.today();
+  scheduler.scrollTo(today);
+}
+
 const updateApartment = async (id, status) => {
+  const scheduler = schedulerRef.value?.control;
   const response = await axios.get('http://localhost/scheduler-backend/updateApartment.php?id=' + id + '&status=' + status)
   const data = response.data
   getReservations();
+  scheduler.message("The appartment is updated!");
 }
 
-const sendReservation = async () => {
+const sendReservation = async (event) => {
   const scheduler = schedulerRef.value?.control;
   axios.post('http://localhost/scheduler-backend/sendEvent.php',
     {
-      event: '',
+      event: event,
       user: currentUser.value,
       deal_id: deal_id.value,
     },
@@ -364,12 +374,44 @@ const updateColor = (e, color) => {
   scheduler.events.update(e);
   scheduler.message("Color updated");
 };
+
 //  dependiendo de la hora el time header lo convierte en manana o tarde
-onMounted(() => {
+onMounted(async () => {
   const scheduler = schedulerRef.value?.control
   getReservations()
   scheduler.message("Welcome to the eyes color, daso and dental scheduler!")
   scheduler.scrollTo(DayPilot.Date.today().firstDayOfMonth())
   generateTimeline()
+  // se espera que el componente termine de renderizar todo para hacer un scroll
+  await nextTick()
+  scrollToToday()
 });
+
 </script>
+
+<style lang="css">
+a {
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 16px;
+}
+
+a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.previous {
+  background-color: #f1f1f1;
+  color: black;
+}
+
+.next {
+  background-color: #04AA6D;
+  color: white;
+}
+
+.round {
+  border-radius: 50%;
+}
+</style>
