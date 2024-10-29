@@ -88,9 +88,7 @@ const config = reactive({
     // en caso de que el rango de fechas esta bien, se envian formularios
     // lleno un formulario por partes, para tener el cuerpo de la reservacion
     let form = [
-      { name: "Name", id: "name" },
-      { name: "Start Date", id: "start", type: 'datetime' },
-      { name: "End Date", id: "end", type: 'datetime' },
+      { name: "Name", id: "name"},
       {
         type: 'select',
         id: 'visitors',
@@ -118,9 +116,16 @@ const config = reactive({
           },
         ],
       },
-      { name: "Commentary", id: "comentary" },
+      { name: "commentary", id: "commentary"},
     ];
-    let modal = await DayPilot.Modal.form(form);
+
+    let data = {
+      name: "",
+      visitors: "1",
+      commentary: "",
+      id: 1204
+    };
+    let modal = await DayPilot.Modal.form(form,data);
     scheduler.clearSelection();
     if (modal.canceled) {
       return;
@@ -184,11 +189,33 @@ const config = reactive({
           },
         ],
       },
-      { name: "Start Date", id: "start", type: 'datetime' },
-      { name: "End Date", id: "end", type: 'datetime' },
-      { name: "Commentary", id: "comentary" },
+      { name: "Start Date", id: "start" , type: 'date'},
+      { name: "End Date", id: "end" , type: 'date'},
+      { name: "Commentary", id: "commentary"},
+
     ];
-    let modal = await DayPilot.Modal.form(form);
+
+    let id = args.e.data.id;
+
+    const response = await axios.get('http://localhost/scheduler-backend/getReservation.php?id=' + id);
+    let data  = response.data[0];
+
+    let name = data['name'];
+    let visitors = data['visitors'];
+    let start_date = new Date(data['start']);
+    let end_date = new Date(data['end']);
+    let commentary = data['comentary'];
+
+    let old_data = {
+      name: name,
+      visitors: visitors,
+      start: start_date,
+      end: end_date,
+      commentary: commentary,
+      id: 1204
+    };
+
+    let modal = await DayPilot.Modal.form(form,old_data);
   },
   eventHoverHandling: "Disabled",
   treeEnabled: true,
