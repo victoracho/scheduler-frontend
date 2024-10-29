@@ -45,7 +45,6 @@ const config = reactive({
     }
   },
   onTimeRangeSelected: async args => {
-    console.log(args)
     const today = DayPilot.Date.today();
     const scheduler = schedulerRef.value?.control;
     const submit = {
@@ -90,27 +89,8 @@ const config = reactive({
     // lleno un formulario por partes, para tener el cuerpo de la reservacion
     let form = [
       { name: "Name", id: "name" },
-      {
-        type: 'date',
-        id: 'from',
-        name: 'Date From',
-        value: '28/10/2025',
-        dateFormat: 'd/M/yyyy',
-      },
-      {
-        type: 'date',
-        id: 'to',
-        name: 'Date To',
-        value: '28/10/2025',
-        dateFormat: 'd/M/yyyy',
-      },
-    ];
-    let modal = await DayPilot.Modal.form(form);
-    scheduler.clearSelection();
-    if (modal.canceled) {
-      return;
-    }
-    form = [
+      { name: "Start Date", id: "start", type: 'datetime' },
+      { name: "End Date", id: "end", type: 'datetime' },
       {
         type: 'select',
         id: 'visitors',
@@ -140,6 +120,11 @@ const config = reactive({
       },
       { name: "Commentary", id: "comentary" },
     ];
+    let modal = await DayPilot.Modal.form(form);
+    scheduler.clearSelection();
+    if (modal.canceled) {
+      return;
+    }
     scheduler.clearSelection();
     if (modal.canceled) {
       return;
@@ -405,7 +390,6 @@ const updateApartment = async (id, status) => {
   getReservations();
   scheduler.message("The appartment is updated!");
 }
-
 const sendReservation = async (event) => {
   const scheduler = schedulerRef.value?.control;
   axios.post('http://localhost/scheduler-backend/sendReservation.php',
@@ -424,14 +408,12 @@ const sendReservation = async (event) => {
       scheduler.message("An unexpected error occured!");
     })
 }
-
 const updateColor = (e, color) => {
   const scheduler = schedulerRef.value?.control;
   e.data.color = color;
   scheduler.events.update(e);
   scheduler.message("Color updated");
 };
-
 //delete reservation
 const deleteReservation = async (id) => {
   const response = await axios.get('http://localhost/scheduler-backend/deleteReservation.php?id=' + id)
