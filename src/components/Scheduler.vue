@@ -47,6 +47,7 @@ const config = reactive({
   onTimeRangeSelected: async args => {
     const today = DayPilot.Date.today();
     const scheduler = schedulerRef.value?.control;
+    /*
     const submit = {
       name: '',
       comentary: '',
@@ -59,6 +60,8 @@ const config = reactive({
       start: '',
       end: ''
     };
+     */
+
     // si la fila es un edificio no se asigna nada
     if (args.resource.includes('e')) {
       return;
@@ -87,8 +90,17 @@ const config = reactive({
     }
     // en caso de que el rango de fechas esta bien, se envian formularios
     // lleno un formulario por partes, para tener el cuerpo de la reservacion
+
+    function validateTextRequired(args) {
+      let value = args.value || "";
+      if (value.trim().length === 0) {
+        args.valid = false;
+        args.message = "Text required";
+      }
+    }
+
     let form = [
-      { name: "Name", id: "name"},
+      { name: "Name", id: "name", onValidate: validateTextRequired},
       {
         type: 'select',
         id: 'visitors',
@@ -116,7 +128,7 @@ const config = reactive({
           },
         ],
       },
-      { name: "commentary", id: "commentary"},
+      { name: "Commentary", id: "commentary", onValidate: validateTextRequired},
     ];
 
     let data = {
@@ -127,14 +139,31 @@ const config = reactive({
     };
     let modal = await DayPilot.Modal.form(form,data);
     scheduler.clearSelection();
+
     if (modal.canceled) {
       return;
     }
-    scheduler.clearSelection();
-    if (modal.canceled) {
-      return;
+    // test tomar datos de la tabla para insertar
+    else {
+      console.log(args.start.value);
+      console.log(args.end.value);
+      console.log(args.resource.replace('a',''));
+      console.log(modal.result.name);
+      console.log(modal.result.visitors);
+      console.log(modal.result.commentary);
     }
+
   },
+  // MOUSEOVER TEST
+  onEventMouseOver: function (args) {
+    console.log("IN");
+  },
+
+  // MOUSEOUT TEST
+  onEventMouseOut: function (args) {
+    console.log("OUT");
+  },
+
   eventMoveHandling: "Update",
   separators: [{ color: "red", location: new DayPilot.Date(), width: 5 }],
   onEventMoved: args => {
@@ -160,8 +189,17 @@ const config = reactive({
   onEventClicked: async args => {
     //args.control.message("Event clicked: " + args.e.data.text);
     //EDITAR RESERVA
+
+    function validateTextRequired(args) {
+      let value = args.value || "";
+      if (value.trim().length === 0) {
+        args.valid = false;
+        args.message = "Text required";
+      }
+    }
+
     let form = [
-      { name: "Name", id: "name" },
+      { name: "Name", id: "name" , onValidate: validateTextRequired },
       {
         type: 'select',
         id: 'visitors',
@@ -189,9 +227,9 @@ const config = reactive({
           },
         ],
       },
-      { name: "Start Date", id: "start" , type: 'date'},
-      { name: "End Date", id: "end" , type: 'date'},
-      { name: "Commentary", id: "commentary"},
+      { name: "Start Date", id: "start" , type: 'datetime' },
+      { name: "End Date", id: "end" , type: 'datetime'},
+      { name: "Commentary", id: "commentary", onValidate: validateTextRequired},
 
     ];
 
@@ -216,6 +254,23 @@ const config = reactive({
     };
 
     let modal = await DayPilot.Modal.form(form,old_data);
+    if (modal.canceled) {
+      return;
+    }
+    else if (modal.result.start < modal.result.end){
+     let id = args.e.data.id;
+     let name = modal.result.name;
+     let comentary = modal.result.commentary;
+     let visitors = modal.result.visitors;
+     let start = modal.result.start;
+     let end = modal.result.end;
+
+      const response = await axios.get('http://localhost/scheduler-backend/editReservation.php?id='+id+'&name='+name+'&comentary='+comentary+'&visitors='+visitors+'&start='+start+'&end='+end)
+      getReservations();
+    }else {
+      DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
+    }
+
   },
   eventHoverHandling: "Disabled",
   treeEnabled: true,
@@ -458,6 +513,10 @@ onMounted(async () => {
   await nextTick()
   scrollToToday()
 });
+
+
+
+
 
 </script>
 
