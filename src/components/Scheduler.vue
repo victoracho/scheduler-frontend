@@ -20,7 +20,7 @@ const config = reactive({
   timeHeaders: [
     { groupBy: "Month", format: "MMMM yyyy" }, // Agrupamos por mes
     { groupBy: "Day", format: "dddd d" }, // Agrupamos por día
-    { groupBy: "Cell", format: () => getShiftLabel() }
+    { groupBy: "Cell" }
   ],
   timeline: [],
   eventHeight: 40,
@@ -37,7 +37,7 @@ const config = reactive({
     { title: "Status", width: 50 }
   ],
   onBeforeTimeHeaderRender: function (args) {
-    if (args.header.text == '8 AM') {
+    if (args.header.text == '12 PM') {
       args.header.text = '☀️ '
     }
     if (args.header.text == '12 AM') {
@@ -88,7 +88,7 @@ const config = reactive({
     // en caso de que el rango de fechas esta bien, se envian formularios
     // lleno un formulario por partes, para tener el cuerpo de la reservacion
     let form = [
-      { name: "Name", id: "name"},
+      { name: "Name", id: "name" },
       {
         type: 'select',
         id: 'visitors',
@@ -116,16 +116,31 @@ const config = reactive({
           },
         ],
       },
-      { name: "commentary", id: "commentary"},
+      { name: "commentary", id: "commentary" },
+      {
+        name: "Start",
+        id: "start",
+        dateFormat: "d.M.yyyy",
+        timeFormat: "H:mm",
+        type: "datetime",
+      },
+      {
+        name: "End",
+        id: "end",
+        dateFormat: "d.M.yyyy",
+        timeFormat: "H:mm",
+        type: "datetime",
+      },
     ];
-
     let data = {
       name: "",
       visitors: "1",
       commentary: "",
-      id: 1204
+      id: 1204,
+      start: args.start.value,
+      end: args.end.value
     };
-    let modal = await DayPilot.Modal.form(form,data);
+    let modal = await DayPilot.Modal.form(form, data);
     scheduler.clearSelection();
     if (modal.canceled) {
       return;
@@ -189,16 +204,15 @@ const config = reactive({
           },
         ],
       },
-      { name: "Start Date", id: "start" , type: 'date'},
-      { name: "End Date", id: "end" , type: 'date'},
-      { name: "Commentary", id: "commentary"},
-
+      { name: "Start Date", id: "start", type: 'date' },
+      { name: "End Date", id: "end", type: 'date' },
+      { name: "Commentary", id: "commentary" },
     ];
 
     let id = args.e.data.id;
 
     const response = await axios.get('http://localhost/scheduler-backend/getReservation.php?id=' + id);
-    let data  = response.data[0];
+    let data = response.data[0];
 
     let name = data['name'];
     let visitors = data['visitors'];
@@ -215,7 +229,7 @@ const config = reactive({
       id: 1204
     };
 
-    let modal = await DayPilot.Modal.form(form,old_data);
+    let modal = await DayPilot.Modal.form(form, old_data);
   },
   eventHoverHandling: "Disabled",
   treeEnabled: true,
@@ -391,8 +405,8 @@ const generateTimeline = () => {
   const totalDays = config.startDate.daysInMonth()
   for (let i = 0; i < totalDays; i++) {
     let day = new DayPilot.Date(config.startDate).addDays(i);
-    timeline.push({ start: day.addHours(0), end: day.addHours(8), text: "Mañana" });
-    timeline.push({ start: day.addHours(8), end: day.addHours(16), text: "Tarde" });
+    timeline.push({ start: day.addHours(0), end: day.addHours(12), text: "Mañana" });
+    timeline.push({ start: day.addHours(12), end: day.addHours(18), text: "Tarde" });
   }
   config.timeline = timeline;
 }
