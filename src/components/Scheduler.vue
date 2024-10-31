@@ -8,8 +8,8 @@
 </template>
 
 <script setup>
-import { DayPilot, DayPilotScheduler } from 'daypilot-pro-vue';
-import { ref, reactive, onMounted, onUpdated, nextTick } from 'vue';
+import {DayPilot, DayPilotScheduler} from 'daypilot-pro-vue';
+import {nextTick, onMounted, reactive, ref} from 'vue';
 import axios from 'axios'
 
 const config = reactive({
@@ -154,15 +154,6 @@ const config = reactive({
     }
 
   },
-  // MOUSEOVER TEST
-  onEventMouseOver: function (args) {
-    console.log("IN");
-  },
-
-  // MOUSEOUT TEST
-  onEventMouseOut: function (args) {
-    console.log("OUT");
-  },
 
   eventMoveHandling: "Update",
   separators: [{ color: "red", location: new DayPilot.Date(), width: 5 }],
@@ -235,13 +226,12 @@ const config = reactive({
 
     let id = args.e.data.id;
 
-    const response = await axios.get('http://localhost/scheduler-backend/getReservation.php?id=' + id);
-    let data  = response.data[0];
+    let data = await getReservation(id);
 
     let name = data['name'];
     let visitors = data['visitors'];
-    let start_date = new Date(data['start']);
-    let end_date = new Date(data['end']);
+    let start_date = data['start']
+    let end_date = data['end']
     let commentary = data['comentary'];
 
     let old_data = {
@@ -262,8 +252,8 @@ const config = reactive({
      let name = modal.result.name;
      let comentary = modal.result.commentary;
      let visitors = modal.result.visitors;
-     let start = modal.result.start;
-     let end = modal.result.end;
+     let start = modal.result.start.value;
+     let end = modal.result.end.value;
 
       const response = await axios.get('http://localhost/scheduler-backend/editReservation.php?id='+id+'&name='+name+'&comentary='+comentary+'&visitors='+visitors+'&start='+start+'&end='+end)
       getReservations();
@@ -272,7 +262,34 @@ const config = reactive({
     }
 
   },
-  eventHoverHandling: "Disabled",
+  eventHoverHandling: "Bubble",
+  bubble: new DayPilot.Bubble({
+    onLoad: function (args) {
+      let start_date = new Date(args.source.data.start);
+      let start = start_date.toDateString();
+      let start_pt = getPrettyTime(start_date)
+      let end_date = new Date(args.source.data.end);
+      let end = end_date.toDateString();
+      let end_pt = getPrettyTime(end_date)
+      let date_created = new Date(args.source.data.date_created).toDateString();
+      let date_modified = new Date(args.source.data.date_modified).toDateString();
+      args.html =
+      "<p>&nbsp<b>Name:</b> "+args.source.data.name+"&nbsp</p>"+
+      "<p>&nbsp<b>Status:</b> "+args.source.data.status+"&nbsp</p>"+
+      "<p>&nbsp<b>Start Date:</b> "+start+" "+start_pt+"&nbsp</p>"+
+      "<p>&nbsp<b>End Date: </b>"+end+" "+end_pt+"&nbsp</p>"+
+      "<p>&nbsp<b>Created by: </b>"+args.source.data.user_created+"&nbsp</p>"+
+      "<p>&nbsp<b>Created on: </b>"+date_created+"&nbsp</p>"+
+      "<p>&nbsp<b>Commentary: </b>"+args.source.data.text+"&nbsp</p>"+
+      "<p>&nbsp<b>Modified by: </b>"+args.source.data.user_modified+"&nbsp</p>"+
+      "<p>&nbsp<b>Modified on: </b>"+date_modified+"&nbsp</p>"+
+      "<p>&nbsp<b>CRM: </b>"+args.source.data.crm+"&nbsp</p>"+
+      "<p>&nbsp<b>DEAL ID: </b>"+args.source.data.deal_id+"&nbsp</p>"+
+      "<p>&nbsp<b>Visitors: </b>"+args.source.data.visitors+"&nbsp</p>"
+      ;
+    }
+  }),
+
   treeEnabled: true,
   onBeforeCellRender: (args) => {
     if (args.cell.start < DayPilot.Date.today()) {
@@ -452,6 +469,11 @@ const generateTimeline = () => {
   config.timeline = timeline;
 }
 
+const getReservation = async (id) => {
+  const response = await axios.get('http://localhost/scheduler-backend/getReservation.php?id=' + id);
+  return response.data[0];
+};
+
 const getReservations = async () => {
   const response = await axios.get('http://localhost/scheduler-backend/reservations.php?time=' + config.startDate)
   const data = response.data
@@ -463,6 +485,27 @@ const scrollToToday = async () => {
   const scheduler = schedulerRef.value?.control;
   const today = DayPilot.Date.today();
   scheduler.scrollTo(today);
+}
+
+const getPrettyTime = (time) => {
+  let hours = time.getHours()
+  let ampm = "AM"
+  if (hours === 0){
+    hours = 12;
+  }else if (hours < 10){
+    hours = '0'+hours;
+  }
+  if (hours > 12){
+    hours = hours - 12;
+    ampm = "PM";
+  }
+  let mins = time.getMinutes()
+  if (mins < 10){
+    mins = '0'+mins;
+  }
+  let fulltime = ''+hours+':'+mins +' '+ ampm;
+  return fulltime;
+
 }
 
 const updateApartment = async (id, status) => {
