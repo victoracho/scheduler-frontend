@@ -145,12 +145,16 @@ const config = reactive({
     }
     // test tomar datos de la tabla para insertar
     else {
-      console.log(args.start.value);
-      console.log(args.end.value);
-      console.log(args.resource.replace('a',''));
-      console.log(modal.result.name);
-      console.log(modal.result.visitors);
-      console.log(modal.result.commentary);
+     let start = args.start.value;
+     let end = args.end.value;
+     let apartment_ID = args.resource.replace('a','')
+     let name = modal.result.name;
+     let comentary = modal.result.commentary;
+     let visitors = modal.result.visitors;
+
+      const response = await axios.get('http://localhost/scheduler-backend/sendReservation.php?name='+name+'&comentary='+comentary+'&visitors='+visitors+'&start='+start+'&end='+end+'&apartment_ID='+apartment_ID)
+      getReservations();
+
     }
 
   },
@@ -273,18 +277,11 @@ const config = reactive({
       let end_pt = getPrettyTime(end_date)
       let date_created = new Date(args.source.data.date_created).toDateString();
       let date_modified = new Date(args.source.data.date_modified).toDateString();
+      if (args.source.data.date_modified === null){
+        date_modified = null;
+      }
+
       args.html =
-      "<style>\n" +
-          "\t.bubble {\n" +
-          "        background-color: #fff;\n" +
-          "        color: #000;\n" +
-          "        border-radius: 5px;\n" +
-          "        padding: 18px;\n" +
-          "        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);\n" +
-          "        max-width: 250px;\n" +
-          "        font-size: 14px;\n" +
-          "        }\n" +
-          "</style>"+
       "<div class='bubble'>"+
       "<p>&nbsp<b>Name:</b> "+args.source.data.name+"&nbsp</p>"+
       "<p>&nbsp<b>Status:</b> "+args.source.data.status+"&nbsp</p>"+
