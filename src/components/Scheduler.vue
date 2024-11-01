@@ -274,6 +274,18 @@ const config = reactive({
       let date_created = new Date(args.source.data.date_created).toDateString();
       let date_modified = new Date(args.source.data.date_modified).toDateString();
       args.html =
+      "<style>\n" +
+          "\t.bubble {\n" +
+          "        background-color: #fff;\n" +
+          "        color: #000;\n" +
+          "        border-radius: 5px;\n" +
+          "        padding: 18px;\n" +
+          "        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);\n" +
+          "        max-width: 250px;\n" +
+          "        font-size: 14px;\n" +
+          "        }\n" +
+          "</style>"+
+      "<div class='bubble'>"+
       "<p>&nbsp<b>Name:</b> "+args.source.data.name+"&nbsp</p>"+
       "<p>&nbsp<b>Status:</b> "+args.source.data.status+"&nbsp</p>"+
       "<p>&nbsp<b>Start Date:</b> "+start+" "+start_pt+"&nbsp</p>"+
@@ -285,7 +297,9 @@ const config = reactive({
       "<p>&nbsp<b>Modified on: </b>"+date_modified+"&nbsp</p>"+
       "<p>&nbsp<b>CRM: </b>"+args.source.data.crm+"&nbsp</p>"+
       "<p>&nbsp<b>DEAL ID: </b>"+args.source.data.deal_id+"&nbsp</p>"+
-      "<p>&nbsp<b>Visitors: </b>"+args.source.data.visitors+"&nbsp</p>"
+      "<p>&nbsp<b>Visitors: </b>"+args.source.data.visitors+"&nbsp</p>"+
+      "</div>"
+
       ;
     }
   }),
@@ -449,6 +463,7 @@ const previous = () => {
   config.startDate = config.startDate.addMonths(-1);
   config.days = config.startDate.daysInMonth();
   generateTimeline();
+  getReservations();
 
 };
 
@@ -456,6 +471,7 @@ const next = () => {
   config.startDate = config.startDate.addMonths(1);
   config.days = config.startDate.daysInMonth();
   generateTimeline();
+  getReservations();
 };
 
 const generateTimeline = () => {
