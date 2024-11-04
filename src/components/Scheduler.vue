@@ -37,7 +37,7 @@ const config = reactive({
     { title: "Status", width: 50 }
   ],
   onBeforeTimeHeaderRender: function (args) {
-    if (args.header.text == '8 AM') {
+    if (args.header.text == '12 PM') {
       args.header.text = '☀️ '
     }
     if (args.header.text == '12 AM') {
@@ -47,20 +47,6 @@ const config = reactive({
   onTimeRangeSelected: async args => {
     const today = DayPilot.Date.today();
     const scheduler = schedulerRef.value?.control;
-    /*
-    const submit = {
-      name: '',
-      comentary: '',
-      visitors: '',
-      deal_id: '',
-      building_id: '',
-      apartment_id: '',
-      crm: '',
-      user: '',
-      start: '',
-      end: ''
-    };
-     */
 
     // si la fila es un edificio no se asigna nada
     if (args.resource.includes('e')) {
@@ -128,12 +114,16 @@ const config = reactive({
           },
         ],
       },
+      { name: "Start Date", id: "start" , type: 'datetime'},
+      { name: "End Date", id: "end" , type: 'datetime'},
       { name: "Commentary", id: "commentary", onValidate: validateTextRequired},
     ];
 
     let data = {
       name: "",
       visitors: "1",
+      start: args.start.value,
+      end: args.end.value,
       commentary: "",
       id: 1204
     };
@@ -144,9 +134,9 @@ const config = reactive({
       return;
     }
     // test tomar datos de la tabla para insertar
-    else {
-     let start = args.start.value;
-     let end = args.end.value;
+    else if (modal.result.start < modal.result.end){
+     let start = modal.result.start.value;
+     let end = modal.result.end.value;
      let apartment_ID = args.resource.replace('a','')
      let name = modal.result.name;
      let comentary = modal.result.commentary;
@@ -155,6 +145,8 @@ const config = reactive({
       const response = await axios.get('http://localhost/scheduler-backend/sendReservation.php?name='+name+'&comentary='+comentary+'&visitors='+visitors+'&start='+start+'&end='+end+'&apartment_ID='+apartment_ID)
       getReservations();
 
+    }else {
+      DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
     }
 
   },
@@ -178,11 +170,10 @@ const config = reactive({
   },
   eventResizeHandling: "Update",
   onEventResized: args => {
-    console.log(args)
+    //console.log(args)
   },
   eventClickHandling: "Enabled",
   onEventClicked: async args => {
-    //args.control.message("Event clicked: " + args.e.data.text);
     //EDITAR RESERVA
 
     function validateTextRequired(args) {
@@ -363,8 +354,16 @@ const config = reactive({
       ];
     }
   },
+  // render enventos en calendario
   onBeforeEventRender: args => {
-    args.data.backColor = args.data.color;
+    // cambiar color por status
+    if (args.data.status === "maintenance"){
+      args.data.backColor = "#93c47d";
+    }else if (args.data.status === "reserved"){
+      args.data.backColor = "#f1c232";
+    }else{
+      args.data.backColor = args.data.color;
+    }
     args.data.borderColor = "darker";
     args.data.fontColor = "#000000";
     args.data.areas = [
@@ -476,8 +475,8 @@ const generateTimeline = () => {
   const totalDays = config.startDate.daysInMonth()
   for (let i = 0; i < totalDays; i++) {
     let day = new DayPilot.Date(config.startDate).addDays(i);
-    timeline.push({ start: day.addHours(0), end: day.addHours(8), text: "Mañana" });
-    timeline.push({ start: day.addHours(8), end: day.addHours(16), text: "Tarde" });
+    timeline.push({ start: day.addHours(0), end: day.addHours(12), text: "Mañana" });
+    timeline.push({ start: day.addHours(12), end: day.addHours(24), text: "Tarde" });
   }
   config.timeline = timeline;
 }
@@ -565,7 +564,7 @@ onMounted(async () => {
   scheduler.message("Welcome to the eyes color, daso and dental scheduler!")
   scheduler.scrollTo(DayPilot.Date.today().firstDayOfMonth())
   generateTimeline()
-  // se espera que el componente termine de renderizar todo para hacer un scroll
+  // se espera que el componente termine de renderizar t0do para hacer un scroll
   await nextTick()
   scrollToToday()
 });
