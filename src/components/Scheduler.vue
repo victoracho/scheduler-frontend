@@ -8,8 +8,9 @@
 </template>
 
 <script setup>
-import {DayPilot, DayPilotScheduler} from 'daypilot-pro-vue';
-import {nextTick, onMounted, reactive, ref} from 'vue';
+import { DayPilot, DayPilotScheduler } from 'daypilot-pro-vue';
+import { nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { useSchedulerStore } from '@/store/scheduler';
 import axios from 'axios'
 
 const config = reactive({
@@ -86,7 +87,7 @@ const config = reactive({
     }
 
     let form = [
-      { name: "Name", id: "name", onValidate: validateTextRequired},
+      { name: "Name", id: "name", onValidate: validateTextRequired },
       {
         type: 'select',
         id: 'visitors',
@@ -114,9 +115,9 @@ const config = reactive({
           },
         ],
       },
-      { name: "Start Date", id: "start" , type: 'datetime'},
-      { name: "End Date", id: "end" , type: 'datetime'},
-      { name: "Commentary", id: "commentary", onValidate: validateTextRequired},
+      { name: "Start Date", id: "start", type: 'datetime' },
+      { name: "End Date", id: "end", type: 'datetime' },
+      { name: "Commentary", id: "commentary", onValidate: validateTextRequired },
     ];
 
     let data = {
@@ -127,25 +128,25 @@ const config = reactive({
       commentary: "",
       id: 1204
     };
-    let modal = await DayPilot.Modal.form(form,data);
+    let modal = await DayPilot.Modal.form(form, data);
     scheduler.clearSelection();
 
     if (modal.canceled) {
       return;
     }
     // test tomar datos de la tabla para insertar
-    else if (modal.result.start < modal.result.end){
-     let start = modal.result.start.value;
-     let end = modal.result.end.value;
-     let apartment_ID = args.resource.replace('a','')
-     let name = modal.result.name;
-     let comentary = modal.result.commentary;
-     let visitors = modal.result.visitors;
+    else if (modal.result.start < modal.result.end) {
+      let start = modal.result.start.value;
+      let end = modal.result.end.value;
+      let apartment_ID = args.resource.replace('a', '')
+      let name = modal.result.name;
+      let comentary = modal.result.commentary;
+      let visitors = modal.result.visitors;
 
-      const response = await axios.get('http://localhost/scheduler-backend/sendReservation.php?name='+name+'&comentary='+comentary+'&visitors='+visitors+'&start='+start+'&end='+end+'&apartment_ID='+apartment_ID)
+      const response = await axios.get('http://localhost/scheduler-backend/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID)
       getReservations();
 
-    }else {
+    } else {
       DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
     }
 
@@ -185,7 +186,7 @@ const config = reactive({
     }
 
     let form = [
-      { name: "Name", id: "name" , onValidate: validateTextRequired },
+      { name: "Name", id: "name", onValidate: validateTextRequired },
       {
         type: 'select',
         id: 'visitors',
@@ -213,9 +214,9 @@ const config = reactive({
           },
         ],
       },
-      { name: "Start Date", id: "start" , type: 'datetime' },
-      { name: "End Date", id: "end" , type: 'datetime'},
-      { name: "Commentary", id: "commentary", onValidate: validateTextRequired},
+      { name: "Start Date", id: "start", type: 'datetime' },
+      { name: "End Date", id: "end", type: 'datetime' },
+      { name: "Commentary", id: "commentary", onValidate: validateTextRequired },
 
     ];
 
@@ -238,21 +239,21 @@ const config = reactive({
       id: 1204
     };
 
-    let modal = await DayPilot.Modal.form(form,old_data);
+    let modal = await DayPilot.Modal.form(form, old_data);
     if (modal.canceled) {
       return;
     }
-    else if (modal.result.start < modal.result.end){
-     let id = args.e.data.id;
-     let name = modal.result.name;
-     let comentary = modal.result.commentary;
-     let visitors = modal.result.visitors;
-     let start = modal.result.start.value;
-     let end = modal.result.end.value;
+    else if (modal.result.start < modal.result.end) {
+      let id = args.e.data.id;
+      let name = modal.result.name;
+      let comentary = modal.result.commentary;
+      let visitors = modal.result.visitors;
+      let start = modal.result.start.value;
+      let end = modal.result.end.value;
 
-      const response = await axios.get('http://localhost/scheduler-backend/editReservation.php?id='+id+'&name='+name+'&comentary='+comentary+'&visitors='+visitors+'&start='+start+'&end='+end)
+      const response = await axios.get('http://localhost/scheduler-backend/editReservation.php?id=' + id + '&name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end)
       getReservations();
-    }else {
+    } else {
       DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
     }
 
@@ -268,27 +269,27 @@ const config = reactive({
       let end_pt = getPrettyTime(end_date)
       let date_created = new Date(args.source.data.date_created).toDateString();
       let date_modified = new Date(args.source.data.date_modified).toDateString();
-      if (args.source.data.date_modified === null){
+      if (args.source.data.date_modified === null) {
         date_modified = null;
       }
 
       args.html =
-      "<div class='bubble'>"+
-      "<p>&nbsp<b>Name:</b> "+args.source.data.name+"&nbsp</p>"+
-      "<p>&nbsp<b>Status:</b> "+args.source.data.status+"&nbsp</p>"+
-      "<p>&nbsp<b>Start Date:</b> "+start+" "+start_pt+"&nbsp</p>"+
-      "<p>&nbsp<b>End Date: </b>"+end+" "+end_pt+"&nbsp</p>"+
-      "<p>&nbsp<b>Created by: </b>"+args.source.data.user_created+"&nbsp</p>"+
-      "<p>&nbsp<b>Created on: </b>"+date_created+"&nbsp</p>"+
-      "<p>&nbsp<b>Commentary: </b>"+args.source.data.text+"&nbsp</p>"+
-      "<p>&nbsp<b>Modified by: </b>"+args.source.data.user_modified+"&nbsp</p>"+
-      "<p>&nbsp<b>Modified on: </b>"+date_modified+"&nbsp</p>"+
-      "<p>&nbsp<b>CRM: </b>"+args.source.data.crm+"&nbsp</p>"+
-      "<p>&nbsp<b>DEAL ID: </b>"+args.source.data.deal_id+"&nbsp</p>"+
-      "<p>&nbsp<b>Visitors: </b>"+args.source.data.visitors+"&nbsp</p>"+
-      "</div>"
+        "<div class='bubble'>" +
+        "<p>&nbsp<b>Name:</b> " + args.source.data.name + "&nbsp</p>" +
+        "<p>&nbsp<b>Status:</b> " + args.source.data.status + "&nbsp</p>" +
+        "<p>&nbsp<b>Start Date:</b> " + start + " " + start_pt + "&nbsp</p>" +
+        "<p>&nbsp<b>End Date: </b>" + end + " " + end_pt + "&nbsp</p>" +
+        "<p>&nbsp<b>Created by: </b>" + args.source.data.user_created + "&nbsp</p>" +
+        "<p>&nbsp<b>Created on: </b>" + date_created + "&nbsp</p>" +
+        "<p>&nbsp<b>Commentary: </b>" + args.source.data.text + "&nbsp</p>" +
+        "<p>&nbsp<b>Modified by: </b>" + args.source.data.user_modified + "&nbsp</p>" +
+        "<p>&nbsp<b>Modified on: </b>" + date_modified + "&nbsp</p>" +
+        "<p>&nbsp<b>CRM: </b>" + args.source.data.crm + "&nbsp</p>" +
+        "<p>&nbsp<b>DEAL ID: </b>" + args.source.data.deal_id + "&nbsp</p>" +
+        "<p>&nbsp<b>Visitors: </b>" + args.source.data.visitors + "&nbsp</p>" +
+        "</div>"
 
-      ;
+        ;
     }
   }),
 
@@ -357,11 +358,11 @@ const config = reactive({
   // render enventos en calendario
   onBeforeEventRender: args => {
     // cambiar color por status
-    if (args.data.status === "maintenance"){
+    if (args.data.status === "maintenance") {
       args.data.backColor = "#93c47d";
-    }else if (args.data.status === "reserved"){
+    } else if (args.data.status === "reserved") {
       args.data.backColor = "#f1c232";
-    }else{
+    } else {
       args.data.backColor = args.data.color;
     }
     args.data.borderColor = "darker";
@@ -454,6 +455,7 @@ const schedulerRef = ref(null);
 const currentUser = ref(null);
 const deal_id = ref(null);
 const crm = ref(null);
+const schedulerStore = useSchedulerStore()
 
 const previous = () => {
   config.startDate = config.startDate.addMonths(-1);
@@ -494,41 +496,38 @@ const getReservations = async () => {
 }
 
 const scrollToToday = async () => {
-  const scheduler = schedulerRef.value?.control;
   const today = DayPilot.Date.today();
-  scheduler.scrollTo(today);
+  scheduler.schedulerMain.scrollTo(today);
 }
 
 const getPrettyTime = (time) => {
   let hours = time.getHours()
   let ampm = "AM"
-  if (hours === 0){
+  if (hours === 0) {
     hours = 12;
-  }else if (hours < 10){
-    hours = '0'+hours;
+  } else if (hours < 10) {
+    hours = '0' + hours;
   }
-  if (hours > 12){
+  if (hours > 12) {
     hours = hours - 12;
     ampm = "PM";
   }
   let mins = time.getMinutes()
-  if (mins < 10){
-    mins = '0'+mins;
+  if (mins < 10) {
+    mins = '0' + mins;
   }
-  let fulltime = ''+hours+':'+mins +' '+ ampm;
+  let fulltime = '' + hours + ':' + mins + ' ' + ampm;
   return fulltime;
 
 }
 
 const updateApartment = async (id, status) => {
-  const scheduler = schedulerRef.value?.control;
   const response = await axios.get('http://localhost/scheduler-backend/updateApartment.php?id=' + id + '&status=' + status)
   const data = response.data
   getReservations();
-  scheduler.message("The appartment is updated!");
+  scheduler.schedulerMain.message("The appartment is updated!");
 }
 const sendReservation = async (event) => {
-  const scheduler = schedulerRef.value?.control;
   axios.post('http://localhost/scheduler-backend/sendReservation.php',
     {
       event: event,
@@ -539,17 +538,16 @@ const sendReservation = async (event) => {
       headers: { 'Content-Type': 'application/json' },
     })
     .then(function (response) {
-      scheduler.message("The reservation was made!");
+      scheduler.schedulerMain.message("The reservation was made!");
     })
     .catch(() => {
-      scheduler.message("An unexpected error occured!");
+      scheduler.schedulerMain.message("An unexpected error occured!");
     })
 }
 const updateColor = (e, color) => {
-  const scheduler = schedulerRef.value?.control;
   e.data.color = color;
-  scheduler.events.update(e);
-  scheduler.message("Color updated");
+  scheduler.schedulerMain.events.update(e);
+  scheduler.schedulerMain.message("Color updated");
 };
 //delete reservation
 const deleteReservation = async (id) => {
@@ -559,22 +557,18 @@ const deleteReservation = async (id) => {
 };
 //  dependiendo de la hora el time header lo convierte en manana o tarde
 onMounted(async () => {
-  const scheduler = schedulerRef.value?.control
+  // asignamos la instancia de daypilot al virtual storage
+  schedulerStore.schedulerMain = schedulerRef.value?.control
   getReservations()
-  scheduler.message("Welcome to the eyes color, daso and dental scheduler!")
-  scheduler.scrollTo(DayPilot.Date.today().firstDayOfMonth())
+  schedulerStore.schedulerMain.message("Welcome to the eyes color, daso and dental scheduler!")
+  schedulerStore.schedulerMain.scrollTo(DayPilot.Date.today().firstDayOfMonth())
   generateTimeline()
   // se espera que el componente termine de renderizar t0do para hacer un scroll
   await nextTick()
   scrollToToday()
 });
 
-
-
-
-
 </script>
-
 <style lang="css">
 a {
   text-decoration: none;
