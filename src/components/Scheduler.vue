@@ -421,6 +421,7 @@ const config = reactive({
         color: "#6fa8dc",
         onClick: args => {
           updateColor(args.source, args.item.color);
+          console.log(args.source)
         }
       },
       {
@@ -478,7 +479,7 @@ const generateTimeline = () => {
   for (let i = 0; i < totalDays; i++) {
     let day = new DayPilot.Date(config.startDate).addDays(i);
     timeline.push({ start: day.addHours(0), end: day.addHours(12), text: "Mañana" });
-    timeline.push({ start: day.addHours(12), end: day.addHours(24), text: "Tarde" });
+    timeline.push({ start: day.addHours(12), end: day.addHours(23), text: "Tarde" });
   }
   config.timeline = timeline;
 }
@@ -497,7 +498,7 @@ const getReservations = async () => {
 
 const scrollToToday = async () => {
   const today = DayPilot.Date.today();
-  scheduler.schedulerMain.scrollTo(today);
+  schedulerStore.schedulerMain.scrollTo(today);
 }
 
 const getPrettyTime = (time) => {
@@ -525,7 +526,7 @@ const updateApartment = async (id, status) => {
   const response = await axios.get('http://localhost/scheduler-backend/updateApartment.php?id=' + id + '&status=' + status)
   const data = response.data
   getReservations();
-  scheduler.schedulerMain.message("The appartment is updated!");
+  schedulerStore.schedulerMain.message("The appartment is updated!");
 }
 const sendReservation = async (event) => {
   axios.post('http://localhost/scheduler-backend/sendReservation.php',
@@ -538,16 +539,16 @@ const sendReservation = async (event) => {
       headers: { 'Content-Type': 'application/json' },
     })
     .then(function (response) {
-      scheduler.schedulerMain.message("The reservation was made!");
+      schedulerStore.schedulerMain.message("The reservation was made!");
     })
     .catch(() => {
-      scheduler.schedulerMain.message("An unexpected error occured!");
+      schedulerStore.schedulerMain.message("An unexpected error occured!");
     })
 }
 const updateColor = (e, color) => {
   e.data.color = color;
-  scheduler.schedulerMain.events.update(e);
-  scheduler.schedulerMain.message("Color updated");
+  schedulerStore.schedulerMain.events.update(e);
+  schedulerStore.schedulerMain.message("Color updated");
 };
 //delete reservation
 const deleteReservation = async (id) => {
