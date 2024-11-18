@@ -362,6 +362,8 @@ const config = reactive({
       args.data.backColor = "#93c47d";
     } else if (args.data.status === "reserved") {
       args.data.backColor = "#f1c232";
+    }else if (args.data.status === "Selected") {
+      args.data.backColor = "#a11236";
     } else {
       args.data.backColor = args.data.color;
     }
@@ -421,7 +423,6 @@ const config = reactive({
         color: "#6fa8dc",
         onClick: args => {
           updateColor(args.source, args.item.color);
-          console.log(args.source)
         }
       },
       {
