@@ -1,19 +1,20 @@
 <template>
   <div class="radio-list">
-    <button @click="fetchOptions">Update 🔄</button>
+    <button :disabled="buttonDisabled" @click="fetchOptions">Update 🔄</button>
     <h3>Today Reservations:</h3>
     <div v-for="(option, index) in options" :key="index" class="radio-item">
       <input
           type="radio"
           :id="`option-${index}`"
           :value="option"
+          v-model="selectedOption"
           @change="handleSelection(option)"
           name="radioGroup"
       />
-      <label :for="`option-${index}`">{{ option.data[0].comentary }}</label>
+      <label :for="`option-${index}`">{{ option[0].data[0].comentary }}</label>
     </div>
-    <button @click="submitSelection">Room in Use</button>
-    <button @click="submitSelection">Empty Room</button>
+    <button :disabled="buttonDisabled" @click="usedRoom(id)">Room in Use</button>
+    <button :disabled="buttonDisabled" @click="empityRoom(id)">Empty Room</button>
   </div>
 </template>
 
@@ -21,6 +22,7 @@
 import { ref, onMounted } from 'vue';
 import axios from "axios";
 import {useSchedulerStore} from "@/store/scheduler";
+import {DayPilot} from "daypilot-pro-vue";
 
 export default {
   name: 'RadioGroupComponent',
@@ -30,37 +32,81 @@ export default {
 
     let options = ref([]);
     const selectedOption = ref(null);
+    let id = ref(null);
+
+    const buttonDisabled = ref(false);
 
     // Fetch radio button options from API
     const fetchOptions = async () => {
+
+      if (buttonDisabled.value) return;
+      buttonDisabled.value = true;
+
       try {
-        clearOptions();
+        options.value = []
         const response = await axios.get('http://localhost/scheduler-backend/todayconfirmations.php');
         let confirms = response.data.reservations;
 
         for (const item of confirms) {
           let id = item.reservation;
           const response = await axios.get('http://localhost/scheduler-backend/getReservation.php?id=' + id);
-          options.value.push(response);
+          const array = [response, item];
+          options.value.push(array);
+
+          //options.value.push(item);
+          //schedulerStore.schedulerMain.update()
         }
+        //console.log(options)
       } catch (error) {
         console.error('Failed to fetch options:', error);
-      }
-    };
-
-    const clearOptions = async () => {
-      //options.value.pop();
-      //console.log(options.value.length)
-      while (options.value.length) {
-        options.value.pop();
+      }finally {
+        buttonDisabled.value = false;
       }
     };
 
     // Log currently selected option
     const handleSelection = (option) => {
-      schedulerStore.schedulerMain.message("Selected "+ option.data[0].comentary);
-      schedulerStore.schedulerMain.scrollTo(option.data[0].start);
+      schedulerStore.schedulerMain.message("Selected "+ option[0].data[0].comentary);
+      schedulerStore.schedulerMain.scrollTo(option[0].data[0].start);
+      let events = schedulerStore.schedulerMain.events.list
+      id.value = option[1].id
+      //id.value.push(option[1].id)
+
+      for (let i = 0; i < events.length; i++) {
+        if (option[0].data[0].id == events[i].id){
+          events[i].status = "Selected"
+        }else {
+          events[i].status = "reserved"
+        }
+      }
     };
+
+    const usedRoom = async (id) => {
+      //console.log("in use")
+      if (id != null) {
+        const response = await axios.get('http://localhost/scheduler-backend/confirmation.php?id=' + id + '&status=CONFIRMED');
+        //await fetchOptions()
+        await DayPilot.Modal.alert("Room Confirmed as In Use");
+        location.reload();
+      }else {
+        await DayPilot.Modal.alert("ERROR: Please Select a Reservation to confirm");
+      }
+
+    }
+
+    const empityRoom = async (id) => {
+      if (id != null){
+        const response = await axios.get('http://localhost/scheduler-backend/confirmation.php?id=' + id + '&status=EMPITY');
+        console.log(id)
+        //await fetchOptions()
+        await DayPilot.Modal.alert("Room Confirmed as Empty");
+        location.reload();
+      }else {
+        await DayPilot.Modal.alert("ERROR: Please Select a Reservation to confirm");
+      }
+
+    }
+
 
     // Fetch options on component mount
     onMounted(fetchOptions);
@@ -69,11 +115,19 @@ export default {
       options,
       selectedOption,
       fetchOptions,
-      clearOptions,
       handleSelection,
+      usedRoom,
+      empityRoom,
+      id,
+      buttonDisabled,
     };
+
   },
+
 };
+
+
+
 </script>
 
 <style scoped>
@@ -93,4 +147,11 @@ export default {
 button {
   margin-top: 10px;
 }
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 </style>
+
