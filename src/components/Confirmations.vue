@@ -11,7 +11,7 @@
           @change="handleSelection(option)"
           name="radioGroup"
       />
-      <label :for="`option-${index}`">{{ option[0].data[0].name +" - "+ option[0].data[0].commentary}}</label>
+      <label :for="`option-${index}`">{{ option[0].data[0].name +" - "+ option[0].data[0].comentary}}</label>
     </div>
     <button :disabled="buttonDisabled" @click="usedRoom(id)">Room in Use</button>
     <button :disabled="buttonDisabled" @click="empityRoom(id)">Empty Room</button>
@@ -44,12 +44,12 @@ export default {
 
       try {
         options.value = []
-        const response = await axios.get('http://localhost/scheduler-backend/todayconfirmations.php');
+        const response = await axios.get('http://schedulerback.dasoddscolor.com/todayconfirmations.php');
         let confirms = response.data.reservations;
 
         for (const item of confirms) {
           let id = item.reservation;
-          const response = await axios.get('http://localhost/scheduler-backend/getReservation.php?id=' + id);
+          const response = await axios.get('http://schedulerback.dasoddscolor.com/getReservation.php?id=' + id);
           const array = [response, item];
           options.value.push(array);
 
@@ -84,7 +84,7 @@ export default {
     const usedRoom = async (id) => {
       //console.log("in use")
       if (id != null) {
-        const response = await axios.get('http://localhost/scheduler-backend/confirmation.php?id=' + id + '&status=CONFIRMED');
+        const response = await axios.get('http://schedulerback.dasoddscolor.com/confirmation.php?id=' + id + '&status=CONFIRMED');
         //await fetchOptions()
         await DayPilot.Modal.alert("Room Confirmed as In Use");
         location.reload();
@@ -96,7 +96,7 @@ export default {
 
     const empityRoom = async (id) => {
       if (id != null){
-        const response = await axios.get('http://localhost/scheduler-backend/confirmation.php?id=' + id + '&status=EMPITY');
+        const response = await axios.get('http://schedulerback.dasoddscolor.com/confirmation.php?id=' + id + '&status=EMPITY');
         console.log(id)
         //await fetchOptions()
         await DayPilot.Modal.alert("Room Confirmed as Empty");
