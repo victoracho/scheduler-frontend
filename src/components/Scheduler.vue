@@ -143,7 +143,7 @@ const config = reactive({
       let comentary = modal.result.commentary;
       let visitors = modal.result.visitors;
 
-      const response = await axios.get('http://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID)
+      const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID)
       getReservations();
 
     } else {
@@ -251,7 +251,7 @@ const config = reactive({
       let start = modal.result.start.value;
       let end = modal.result.end.value;
 
-      const response = await axios.get('http://schedulerback.dasoddscolor.com/editReservation.php?id=' + id + '&name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end)
+      const response = await axios.get('https://schedulerback.dasoddscolor.com/editReservation.php?id=' + id + '&name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end)
       getReservations();
     } else {
       DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
@@ -486,12 +486,12 @@ const generateTimeline = () => {
 }
 
 const getReservation = async (id) => {
-  const response = await axios.get('http://schedulerback.dasoddscolor.com/getReservation.php?id=' + id);
+  const response = await axios.get('https://schedulerback.dasoddscolor.com/getReservation.php?id=' + id);
   return response.data[0];
 };
 
 const getReservations = async () => {
-  const response = await axios.get('http://schedulerback.dasoddscolor.com/reservations.php?time=' + config.startDate)
+  const response = await axios.get('https://schedulerback.dasoddscolor.com/reservations.php?time=' + config.startDate)
   const data = response.data
   config.resources = data.buildings
   config.events = data.reservations
@@ -524,13 +524,13 @@ const getPrettyTime = (time) => {
 }
 
 const updateApartment = async (id, status) => {
-  const response = await axios.get('http://schedulerback.dasoddscolor.com/updateApartment.php?id=' + id + '&status=' + status)
+  const response = await axios.get('https://schedulerback.dasoddscolor.com/updateApartment.php?id=' + id + '&status=' + status)
   const data = response.data
   getReservations();
   schedulerStore.schedulerMain.message("The appartment is updated!");
 }
 const sendReservation = async (event) => {
-  axios.post('http://schedulerback.dasoddscolor.com/sendReservation.php',
+  axios.post('https://schedulerback.dasoddscolor.com/sendReservation.php',
     {
       event: event,
       user: currentUser.value,
@@ -553,7 +553,7 @@ const updateColor = (e, color) => {
 };
 //delete reservation
 const deleteReservation = async (id) => {
-  const response = await axios.get('http://schedulerback.dasoddscolor.com/deleteReservation.php?id=' + id)
+  const response = await axios.get('https://schedulerback.dasoddscolor.com/deleteReservation.php?id=' + id)
   const data = response.data
   getReservations();
 };
