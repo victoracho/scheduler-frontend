@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^1.7.7",
     "daypilot-pro-vue": "https://npm.daypilot.org/daypilot-pro-vue/trial/2024.4.6180.tar.gz",
+    "pinia": "^2.2.6",
     "vue": "^3.3.4",
     "vue-axios": "^3.5.2"
   },

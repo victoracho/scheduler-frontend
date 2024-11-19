@@ -11,7 +11,7 @@
           @change="handleSelection(option)"
           name="radioGroup"
       />
-      <label :for="`option-${index}`">{{ option[0].data[0].comentary }}</label>
+      <label :for="`option-${index}`">{{ option[0].data[0].name +" - "+ option[0].data[0].commentary}}</label>
     </div>
     <button :disabled="buttonDisabled" @click="usedRoom(id)">Room in Use</button>
     <button :disabled="buttonDisabled" @click="empityRoom(id)">Empty Room</button>
