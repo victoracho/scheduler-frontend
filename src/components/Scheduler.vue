@@ -25,7 +25,7 @@ const config = reactive({
     { groupBy: "Cell", format: () => getShiftLabel() }
   ],
   timeline: [],
-  heightSpec: 100,
+  heightSpec: "Auto",
   eventHeight: 40,
   cellWidth: 80, // Ancho de cada celda
   //treeEnabled: false,

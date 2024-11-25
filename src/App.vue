@@ -25,7 +25,7 @@
 
 .main-component {
   flex: 9; /* 90% */
-  background-color: #a3b7bd; /* Optional styling */
+  background-color: #ffffff; /* Optional styling */
 }
 
 .side-component {
