@@ -2,6 +2,7 @@
   <div class="buttons">
     <a class="previous" v-on:click="previous">Previous</a>
     <a class="next" v-on:click="next">Next</a>
+
   </div>
   <br>
   <DayPilotScheduler :config="config" ref="schedulerRef" />
@@ -417,38 +418,7 @@ const config = reactive({
       {
         text: "-"
       },
-      {
-        text: "Blue",
-        icon: "icon icon-blue",
-        color: "#6fa8dc",
-        onClick: args => {
-          updateColor(args.source, args.item.color);
-        }
-      },
-      {
-        text: "Green",
-        icon: "icon icon-green",
-        color: "#93c47d",
-        onClick: args => {
-          updateColor(args.source, args.item.color);
-        }
-      },
-      {
-        text: "Yellow",
-        icon: "icon icon-yellow",
-        color: "#f1c232",
-        onClick: args => {
-          updateColor(args.source, args.item.color);
-        }
-      },
-      {
-        text: "Red",
-        icon: "icon icon-red",
-        color: "#dd7e6b",
-        onClick: args => {
-          updateColor(args.source, args.item.color);
-        }
-      },
+
     ]
   })
 }
