@@ -1,10 +1,9 @@
 <template>
   <div class="buttons">
-    <a class="previous" v-on:click="previous">Previous</a>
-    <a class="next" v-on:click="next">Next</a>
+    <button class="previous" v-on:click="previous">Previous</button>
+    <button class="next" v-on:click="next">Next</button>
 
   </div>
-  <br>
   <DayPilotScheduler :config="config" ref="schedulerRef" />
 </template>
 
@@ -53,6 +52,7 @@ const config = reactive({
 
     // si la fila es un edificio no se asigna nada
     if (args.resource.includes('e')) {
+      scheduler.clearSelection();
       return;
     }
     // se valida si el rango a escoger es en el pasado
@@ -543,13 +543,21 @@ onMounted(async () => {
 
 </script>
 <style lang="css">
-a {
+
+.buttons{
+  display: flex;
+  gap: 8px;
+  padding: 5px;
+  text-align: center;
+}
+
+button {
   text-decoration: none;
   display: inline-block;
   padding: 8px 16px;
 }
 
-a:hover {
+button:hover {
   background-color: #ddd;
   color: black;
 }
@@ -557,15 +565,20 @@ a:hover {
 .previous {
   background-color: #f1f1f1;
   color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
 }
 
 .next {
   background-color: #04AA6D;
   color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
 }
 
-.round {
-  border-radius: 50%;
-}
 
 </style>

@@ -21,6 +21,8 @@
   display: flex;
   width: 100%;
   gap: 10px;
+  border: 2px solid #ccc; /* Adds a border around the component */
+  border-radius: 8px; /* Optional: rounds the corners of the border */
 }
 
 .main-component {
