@@ -25,6 +25,7 @@ const config = reactive({
     { groupBy: "Cell", format: () => getShiftLabel() }
   ],
   timeline: [],
+  heightSpec: 100,
   eventHeight: 40,
   cellWidth: 80, // Ancho de cada celda
   //treeEnabled: false,
@@ -566,4 +567,5 @@ a:hover {
 .round {
   border-radius: 50%;
 }
+
 </style>
