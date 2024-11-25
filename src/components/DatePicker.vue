@@ -1,0 +1,228 @@
+<template>
+    <div class="minicalendar">
+    <VDatePicker
+        v-model.range="range"
+        :initial-page="{ month: todayMonth, year: todayYear }"
+        :borderless = true
+        :color="selectedColor"
+        :attributes="attrs"
+        @drag="handleDrag"
+        @dayclick="handleClick"
+    />
+    <div class="container">
+      <select name="options" id="options" @change="handleBuildChange" v-model="selectedBuild" >
+        <option :value="'N/A'">N/A</option>
+        <option :value="1">E-1</option>
+        <option :value="2">E-2</option>
+        <option :value="3">E-3</option>
+      </select>
+      <select name="options" id="options" v-model="selectedItem" @change="handleSelectionChange" :disabled="isDisabled">
+        <option v-for="(option, index) in options" :key="index" :value="option"> Apt-{{ option }}</option>
+      </select>
+      <button type="button" class="btn" :disabled="buttonDisabled" @click="Insert">Reserve</button>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue';
+//import {useSchedulerStore} from "@/store/scheduler";
+import {DayPilot} from "daypilot-pro-vue";
+import axios from "axios";
+
+const selectedColor = ref('orange');
+const todayMonth = ref(new Date().getMonth()+1);
+const todayYear = ref(new Date().getFullYear());
+const attrs = ref([]);
+let start = ref(null);
+let end = ref(null);
+let range = ref();
+let click = ref(true);
+let options = ref(["N/A", 1, 2]);
+const selectedBuild = ref("N/A");
+const selectedItem = ref("N/A");
+const buttonDisabled = ref(true);
+const isDisabled = ref(true);
+
+
+export default {
+
+  name: "App",
+  setup() {
+    //const schedulerStore = useSchedulerStore();
+
+    const handleClick = async (day) => {
+      if (click.value === true){
+        //console.log("Inicio")
+      }else {
+        //console.log("Fin")
+        //console.log(start.value + " - to - "+ end.value)
+      }
+      click.value = !click.value
+    }
+
+    const handleDrag = async (day) => {
+      start.value = day.start
+      end.value  = day.end
+      //console.log("DRAG")
+    }
+
+    const handleSelectionChange = async =>{
+      if (selectedItem.value === "N/A"){
+        buttonDisabled.value = true;
+      }else{
+        buttonDisabled.value = false;
+      }
+    }
+
+    const handleBuildChange = async =>{
+      if (selectedBuild.value === "N/A"){
+        isDisabled.value = true;
+        selectedItem.value = "N/A";
+        buttonDisabled.value = true;
+      }else{
+        isDisabled.value = false;
+      }
+    }
+
+    function validateTextRequired(args) {
+      let value = args.value || "";
+      if (value.trim().length === 0) {
+        args.valid = false;
+        args.message = "Text required";
+      }
+    }
+
+    const Insert = async () => {
+      let form = [
+        { name: "Name", id: "name", onValidate: validateTextRequired },
+        {
+          type: 'select',
+          id: 'visitors',
+          name: 'Select the number of visitors',
+          options: [
+            {
+              name: '1',
+              id: '1',
+            },
+            {
+              name: '2',
+              id: '2',
+            },
+            {
+              name: '3',
+              id: '3',
+            },
+            {
+              name: '4',
+              id: '4',
+            },
+            {
+              name: '5',
+              id: '5',
+            },
+          ],
+        },
+        { name: "Start Date", id: "start", type: 'datetime' },
+        { name: "End Date", id: "end", type: 'datetime' },
+        { name: "Commentary", id: "commentary", onValidate: validateTextRequired },
+      ];
+
+      let data = {
+        name: "",
+        visitors: "1",
+        start: start.value,
+        end: end.value,
+        commentary: "",
+        id: 1204
+      };
+
+        let modal = await DayPilot.Modal.form(form, data);
+      if (modal.canceled) {
+        return;
+      }
+      else if (modal.result.start < modal.result.end) {
+        let start = modal.result.start.value;
+        let end = modal.result.end.value;
+        let apartment_ID = selectedItem.value;
+        let name = modal.result.name;
+        let comentary = modal.result.commentary;
+        let visitors = modal.result.visitors;
+
+        const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID)
+        location.reload();
+      } else {
+        DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
+      }
+    }
+
+    return {
+      handleBuildChange,
+      isDisabled,
+      selectedBuild,
+      handleSelectionChange,
+      buttonDisabled,
+      selectedItem,
+      options,
+      Insert,
+      handleClick,
+      handleDrag,
+      selectedColor,
+      attrs,
+      todayYear,
+      todayMonth,
+      range,
+    };
+  },
+};
+</script>
+
+<style scoped>
+
+.minicalendar {
+  text-align: center;
+  border: 2px solid #ccc; /* Adds a border around the component */
+  border-radius: 8px;
+}
+
+.buttons {
+  padding: 10px 15px;
+  background-color: #ea580c;
+  color: white; border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.container {
+  display: flex;
+  align-items: stretch;
+  gap: 5px; /* Space between select and button */
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+select {
+  padding: 8px;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.btn {
+  padding: 8px 16px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #ea580c;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+</style>
+

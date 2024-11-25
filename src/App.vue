@@ -4,6 +4,8 @@
       <Scheduler />
     </div>
     <div class="side-component">
+      <DatePicker />
+      <br>
       <Confirmations />
     </div>
   </div>
@@ -38,5 +40,7 @@
 <script setup>
 import Scheduler from './components/Scheduler.vue'
 import Confirmations from './components/Confirmations.vue';
+import DatePicker from "@/components/DatePicker.vue";
+import Test from "@/components/Test.vue";
 </script>
 
