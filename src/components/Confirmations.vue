@@ -1,7 +1,8 @@
 <template>
   <div class="radio-list">
+    <h2>CONFIRMATIONS:</h2>
     <button :disabled="buttonDisabled" @click="fetchOptions">Update 🔄</button>
-    <h3>Today Reservations:</h3>
+    <b>Today Reservations:</b>
     <div v-for="(option, index) in options" :key="index" class="radio-item">
       <input
           type="radio"
@@ -136,6 +137,9 @@ export default {
   flex-direction: column;
   gap: 8px;
   padding: 16px;
+  text-align: center;
+  border: 2px solid #ccc; /* Adds a border around the component */
+  border-radius: 8px;
 
 }
 
@@ -145,13 +149,20 @@ export default {
 }
 
 button {
-  margin-top: 10px;
+  padding: 5px 15px;
+  background-color: #2296c1;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
 }
 
 button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
+
 
 </style>
 
