@@ -11,7 +11,7 @@
         :disabled-dates="disabledDates"
     />
     <div class="container">
-      <select name="options" id="options" @change="handleBuildChange" v-model="selectedBuild" >
+      <select name="options" id="options" @change="handleBuildChange" v-model="selectedBuild" :disabled="buildDisabled">
         <option :value="'N/A'">N/A</option>
         <option :value="1">E-1</option>
         <option :value="2">E-2</option>
@@ -44,6 +44,7 @@ const selectedBuild = ref("N/A");
 const selectedItem = ref("N/A");
 const buttonDisabled = ref(true);
 const isDisabled = ref(true);
+const buildDisabled = ref(true);
 
 const today = new Date();
 const yesterday = new Date();
@@ -61,9 +62,8 @@ export default {
       if (click.value === true){
         //console.log("Inicio")
       }else {
-        //console.log("Fin")
-        //console.log(start.value + " - to - "+ end.value)
         selectedBuild.value = "N/A";
+        buildDisabled.value = false;
 
       }
       click.value = !click.value
@@ -185,6 +185,7 @@ export default {
     }
 
     return {
+      buildDisabled,
       disabledDates,
       handleBuildChange,
       isDisabled,
