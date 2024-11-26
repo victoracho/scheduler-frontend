@@ -60,7 +60,10 @@ export default {
 
     const handleClick = async (day) => {
       if (click.value === true){
-        //console.log("Inicio")
+        selectedItem.value = "N/A";
+        isDisabled.value = true;
+        selectedBuild.value = "N/A";
+        buildDisabled.value = true;
       }else {
         selectedBuild.value = "N/A";
         buildDisabled.value = false;
