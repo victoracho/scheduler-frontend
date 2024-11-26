@@ -8,6 +8,7 @@
         :attributes="attrs"
         @drag="handleDrag"
         @dayclick="handleClick"
+        :disabled-dates="disabledDates"
     />
     <div class="container">
       <select name="options" id="options" @change="handleBuildChange" v-model="selectedBuild" >
@@ -34,8 +35,8 @@ const selectedColor = ref('orange');
 const todayMonth = ref(new Date().getMonth()+1);
 const todayYear = ref(new Date().getFullYear());
 const attrs = ref([]);
-let start = ref(null);
-let end = ref(null);
+let start = ref(new Date());
+let end = ref(new Date());
 let range = ref();
 let click = ref(true);
 let options = ref(["N/A", 1, 2]);
@@ -43,6 +44,11 @@ const selectedBuild = ref("N/A");
 const selectedItem = ref("N/A");
 const buttonDisabled = ref(true);
 const isDisabled = ref(true);
+
+const today = new Date();
+const yesterday = new Date();
+yesterday.setDate(today.getDate() - 1);
+const disabledDates = ref([{ start: null, end: yesterday }]);
 
 
 export default {
@@ -57,6 +63,8 @@ export default {
       }else {
         //console.log("Fin")
         //console.log(start.value + " - to - "+ end.value)
+        selectedBuild.value = "N/A";
+
       }
       click.value = !click.value
     }
@@ -64,7 +72,6 @@ export default {
     const handleDrag = async (day) => {
       start.value = day.start
       end.value  = day.end
-      //console.log("DRAG")
     }
 
     const handleSelectionChange = async =>{
@@ -75,13 +82,34 @@ export default {
       }
     }
 
-    const handleBuildChange = async =>{
-      if (selectedBuild.value === "N/A"){
+    function formatDate(date){
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+      const day = String(date.getDate()).padStart(2, "0");
+
+      const formattedDate = `${year}-${month}-${day}`;
+      return formattedDate;
+    }
+
+    const handleBuildChange = async async => {
+      if (selectedBuild.value === "N/A") {
         isDisabled.value = true;
         selectedItem.value = "N/A";
         buttonDisabled.value = true;
-      }else{
-        isDisabled.value = false;
+      } else {
+        selectedItem.value = "N/A";
+        let start_only_date = formatDate(start.value)
+        let end_only_date = formatDate(end.value)
+        try {
+          isDisabled.value = true;
+          const response = await axios.get('http://localhost/scheduler-backend/getAvailablesApartments.php?build=' + selectedBuild.value + '&start=' + start_only_date + '&end=' + end_only_date);
+          options.value = response.data;
+        } catch (error) {
+          console.error('Failed to fetch options:', error);
+        }finally {
+          isDisabled.value = false;
+        }
+
       }
     }
 
@@ -157,6 +185,7 @@ export default {
     }
 
     return {
+      disabledDates,
       handleBuildChange,
       isDisabled,
       selectedBuild,
