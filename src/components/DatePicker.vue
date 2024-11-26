@@ -102,7 +102,7 @@ export default {
         let end_only_date = formatDate(end.value)
         try {
           isDisabled.value = true;
-          const response = await axios.get('http://localhost/scheduler-backend/getAvailablesApartments.php?build=' + selectedBuild.value + '&start=' + start_only_date + '&end=' + end_only_date);
+          const response = await axios.get('https://schedulerback.dasoddscolor.com/getAvailablesApartments.php?build=' + selectedBuild.value + '&start=' + start_only_date + '&end=' + end_only_date);
           options.value = response.data;
         } catch (error) {
           console.error('Failed to fetch options:', error);
