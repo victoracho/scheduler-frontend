@@ -13,9 +13,8 @@
     <div class="container">
       <select name="options" id="options" @change="handleBuildChange" v-model="selectedBuild" :disabled="buildDisabled">
         <option :value="'N/A'">N/A</option>
-        <option :value="1">E-1</option>
-        <option :value="2">E-2</option>
-        <option :value="3">E-3</option>
+        <option :value="1">2268 NW</option>
+        <option :value="2">N. Miami</option>
       </select>
       <select name="options" id="options" v-model="selectedItem" @change="handleSelectionChange" :disabled="isDisabled">
         <option v-for="(option, index) in options" :key="index" :value="option"> Apt-{{ option }}</option>

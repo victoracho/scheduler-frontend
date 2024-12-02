@@ -43,6 +43,9 @@
 import Scheduler from './components/Scheduler.vue'
 import Confirmations from './components/Confirmations.vue';
 import DatePicker from "@/components/DatePicker.vue";
-import Test from "@/components/Test.vue";
+
+
+
+
 </script>
 
