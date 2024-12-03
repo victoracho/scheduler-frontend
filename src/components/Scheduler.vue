@@ -360,9 +360,9 @@ const config = reactive({
   // render enventos en calendario
   onBeforeEventRender: args => {
     // cambiar color por status
-    if (args.data.status === "maintenance") {
+    if (args.data.status === "reserved") {
       args.data.backColor = "#93c47d";
-    } else if (args.data.status === "reserved") {
+    } else if (args.data.status === "prebooked") {
       args.data.backColor = "#f1c232";
     }else if (args.data.status === "Selected") {
       args.data.backColor = "#a11236";
@@ -400,6 +400,28 @@ const config = reactive({
   contextMenu: new DayPilot.Menu({
     items: [
       {
+        icon: "fa-solid fa-circle-check",
+        text: "Confirm Reservation",
+        onClick: async args => {
+          const e = args.source;
+          const scheduler = schedulerRef.value?.control;
+
+
+          const modal = await DayPilot.Modal.confirm("Are you sure you want to Confirm this reservation?");
+          if (modal.canceled) {
+            return;
+          } else {
+            confirmReservation(args.source.data.id)
+            scheduler.message("Confirmed.");
+            console.log(window.location)
+          }
+        }
+      },
+      {
+        text: "-"
+      },
+      {
+        icon: "fa-solid fa-trash-can",
         text: "Delete",
         onClick: async args => {
           const e = args.source;
@@ -415,9 +437,6 @@ const config = reactive({
             scheduler.message("Deleted.");
           }
         }
-      },
-      {
-        text: "-"
       },
 
     ]
@@ -528,6 +547,14 @@ const deleteReservation = async (id) => {
   const data = response.data
   getReservations();
 };
+
+const confirmReservation = async (id) => {
+  const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmBooking.php?id=' + id + '&status=reserved')
+  const data = response.data
+  getReservations();
+};
+
+
 //  dependiendo de la hora el time header lo convierte en manana o tarde
 onMounted(async () => {
   // asignamos la instancia de daypilot al virtual storage
