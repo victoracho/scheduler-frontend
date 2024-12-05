@@ -29,7 +29,9 @@ import { ref } from 'vue';
 //import {useSchedulerStore} from "@/store/scheduler";
 import {DayPilot} from "daypilot-pro-vue";
 import axios from "axios";
+import {useSchedulerStore} from "@/store/scheduler";
 
+const schedulerStore = useSchedulerStore()
 const selectedColor = ref('orange');
 const todayMonth = ref(new Date().getMonth()+1);
 const todayYear = ref(new Date().getFullYear());
@@ -179,7 +181,7 @@ export default {
         let comentary = modal.result.commentary;
         let visitors = modal.result.visitors;
 
-        const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID)
+        const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + schedulerStore.user)
         location.reload();
       } else {
         DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
@@ -204,6 +206,7 @@ export default {
       todayYear,
       todayMonth,
       range,
+      schedulerStore
     };
   },
 };

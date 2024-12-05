@@ -12,6 +12,7 @@ import { DayPilot, DayPilotScheduler } from 'daypilot-pro-vue';
 import { nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { useSchedulerStore } from '@/store/scheduler';
 import axios from 'axios'
+import { inject } from 'vue';
 
 const config = reactive({
   startDate: DayPilot.Date.today().firstDayOfMonth(),
@@ -24,7 +25,7 @@ const config = reactive({
     { groupBy: "Cell", format: () => getShiftLabel() }
   ],
   timeline: [],
-  heightSpec: "Auto",
+  heightSpec: "Parent100Pct",
   eventHeight: 40,
   cellWidth: 80, // Ancho de cada celda
   //treeEnabled: false,
@@ -145,7 +146,7 @@ const config = reactive({
       let comentary = modal.result.commentary;
       let visitors = modal.result.visitors;
 
-      const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID)
+      const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + schedulerStore.user)
       getReservations();
 
     } else {
@@ -275,6 +276,7 @@ const config = reactive({
         date_modified = null;
       }
 
+      // TODO cambiar link
       args.html =
         "<div class='bubble'>" +
         "<p>&nbsp<b>Name:</b> " + args.source.data.name + "&nbsp</p>" +
@@ -287,7 +289,7 @@ const config = reactive({
         "<p>&nbsp<b>Modified by: </b>" + args.source.data.user_modified + "&nbsp</p>" +
         "<p>&nbsp<b>Modified on: </b>" + date_modified + "&nbsp</p>" +
         "<p>&nbsp<b>CRM: </b>" + args.source.data.crm + "&nbsp</p>" +
-        "<p>&nbsp<b>DEAL ID: </b>" + args.source.data.deal_id + "&nbsp</p>" +
+        "<b>&nbspDEAL ID: </b><a href=\"https://daso.dds.miami/crm/deal/details/55066/\" target=\"_blank\">" + args.source.data.deal_id + "&nbsp</a>" +
         "<p>&nbsp<b>Visitors: </b>" + args.source.data.visitors + "&nbsp</p>" +
         "</div>"
 
@@ -394,7 +396,9 @@ const config = reactive({
       args.data.moveDisabled = true;
       args.data.backColor = "#F0F0F0"; // Cambia el color de fondo para eventos pasados
       args.data.fontColor = "#000000"; // Cambia el color del texto si es necesario
-      args.data.html = args.data.text + " (Pasado)"; // Añadir texto extra
+      args.data.html = args.data.name + " (Pasado)"; // Añadir texto extra
+    }else {
+      args.data.html = args.data.name + " (" + args.data.crm +")"
     }
   },
   contextMenu: new DayPilot.Menu({
@@ -413,7 +417,8 @@ const config = reactive({
           } else {
             confirmReservation(args.source.data.id)
             scheduler.message("Confirmed.");
-            console.log(window.location)
+            // TODO BORRAR
+            console.log(schedulerStore)
           }
         }
       },

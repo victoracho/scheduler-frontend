@@ -4,6 +4,8 @@ import { createPinia, defineStore } from 'pinia'
 export const pinia = createPinia()
 export const useSchedulerStore = defineStore('scheduler', () => {
   const currentEvent = ref(null)
+  const user = inject('user')
+  const crm = inject('crm')
   const deal = ref(null)
   const deal_name = ref('')
   const schedulerMain = ref()
@@ -20,7 +22,9 @@ export const useSchedulerStore = defineStore('scheduler', () => {
     deal_name,
     currentDeal,
     currentUser,
-    currStatus
+    currStatus,
+    user,
+    crm
   }
 })
 
