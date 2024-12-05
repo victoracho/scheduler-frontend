@@ -30,6 +30,7 @@ import { ref } from 'vue';
 import {DayPilot} from "daypilot-pro-vue";
 import axios from "axios";
 import {useSchedulerStore} from "@/store/scheduler";
+import Scheduler from "@/components/Scheduler.vue";
 
 
 const selectedColor = ref('orange');
@@ -161,7 +162,7 @@ export default {
       ];
 
       let data = {
-        name: "",
+        name: schedulerStore.patient_name,
         visitors: "1",
         start: start.value,
         end: end.value,

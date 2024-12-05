@@ -124,7 +124,7 @@ const config = reactive({
     ];
 
     let data = {
-      name: "",
+      name: schedulerStore.patient_name,
       visitors: "1",
       start: args.start.value,
       end: args.end.value,
