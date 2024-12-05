@@ -85,7 +85,7 @@ export default {
     const usedRoom = async (id) => {
       //console.log("in use")
       if (id != null) {
-        const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmation.php?id=' + id + '&status=CONFIRMED');
+        const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmation.php?id=' + id + 'user' + schedulerStore.user + '&status=CONFIRMED');
         //await fetchOptions()
         await DayPilot.Modal.alert("Room Confirmed as In Use");
         location.reload();
@@ -97,7 +97,7 @@ export default {
 
     const empityRoom = async (id) => {
       if (id != null){
-        const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmation.php?id=' + id + '&status=EMPITY');
+        const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmation.php?id=' + id + 'user' + schedulerStore.user + '&status=EMPITY');
         console.log(id)
         //await fetchOptions()
         await DayPilot.Modal.alert("Room Confirmed as Empty");

@@ -254,7 +254,7 @@ const config = reactive({
       let start = modal.result.start.value;
       let end = modal.result.end.value;
 
-      const response = await axios.get('https://schedulerback.dasoddscolor.com/editReservation.php?id=' + id + '&name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end)
+      const response = await axios.get('https://schedulerback.dasoddscolor.com/editReservation.php?id=' + id + '&name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&user=' + schedulerStore.user)
       getReservations();
     } else {
       DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
