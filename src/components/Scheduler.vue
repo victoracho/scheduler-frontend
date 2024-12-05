@@ -146,7 +146,7 @@ const config = reactive({
       let comentary = modal.result.commentary;
       let visitors = modal.result.visitors;
 
-      const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + schedulerStore.user)
+      const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + schedulerStore.user+ '&crm=' + schedulerStore.crm)
       getReservations();
 
     } else {
