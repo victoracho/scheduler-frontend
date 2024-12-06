@@ -7,7 +7,7 @@ export const useSchedulerStore = defineStore('scheduler', () => {
   const user = inject('user')
   const crm = inject('crm')
   const deal_id = inject("deal_id")
-  const deal_name = ref('')
+  const deal_name =inject("deal_name")
   const schedulerMain = ref()
   const patient_name = inject("patient_name")
   const currentUser = ref(null)
