@@ -1,8 +1,12 @@
 <template>
+  <div class="container">
   <div class="buttons">
     <button class="previous" v-on:click="previous">Previous</button>
     <button class="next" v-on:click="next">Next</button>
-
+  </div>
+  <div class="center-text">
+    <h3>Deal: {{ schedulerStore.deal_name }}</h3>
+  </div>
   </div>
   <DayPilotScheduler :config="config" ref="schedulerRef" />
 </template>
@@ -13,6 +17,7 @@ import { nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { useSchedulerStore } from '@/store/scheduler';
 import axios from 'axios'
 import { inject } from 'vue';
+import Scheduler from "@/components/Scheduler.vue";
 
 const config = reactive({
   startDate: DayPilot.Date.today().firstDayOfMonth(),
@@ -146,7 +151,7 @@ const config = reactive({
       let comentary = modal.result.commentary;
       let visitors = modal.result.visitors;
 
-      const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + schedulerStore.user+ '&crm=' + schedulerStore.crm)
+      const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + schedulerStore.user+ '&crm=' + schedulerStore.crm + '&deal_id=' + schedulerStore.deal_id)
       getReservations();
 
     } else {
@@ -276,7 +281,17 @@ const config = reactive({
         date_modified = null;
       }
 
-      // TODO cambiar link
+      let link = "";
+      if (args.source.data.crm === "DASO"){
+        link = "<a href=\"https://daso.dds.miami/crm/deal/details/"+args.source.data.deal_id +"/\" target=\"_blank\">" + args.source.data.deal_id + "&nbsp</a>";
+      }
+      if (args.source.data.crm === "DDS"){
+        link = "<a href=\"https://dds.miami/crm/deal/details/"+args.source.data.deal_id +"/\" target=\"_blank\">" + args.source.data.deal_id + "&nbsp</a>";
+      }
+      if (args.source.data.crm === "ECL"){
+        link = "<a href=\"https://crm.eyescolorlab.com/crm/deal/details/"+args.source.data.deal_id +"/\" target=\"_blank\">" + args.source.data.deal_id + "&nbsp</a>";
+      }
+
       args.html =
         "<div class='bubble'>" +
         "<p>&nbsp<b>Name:</b> " + args.source.data.name + "&nbsp</p>" +
@@ -289,7 +304,7 @@ const config = reactive({
         "<p>&nbsp<b>Modified by: </b>" + args.source.data.user_modified + "&nbsp</p>" +
         "<p>&nbsp<b>Modified on: </b>" + date_modified + "&nbsp</p>" +
         "<p>&nbsp<b>CRM: </b>" + args.source.data.crm + "&nbsp</p>" +
-        "<b>&nbspDEAL ID: </b><a href=\"https://daso.dds.miami/crm/deal/details/55066/\" target=\"_blank\">" + args.source.data.deal_id + "&nbsp</a>" +
+        "<b>&nbspDEAL ID: </b>" + link +
         "<p>&nbsp<b>Visitors: </b>" + args.source.data.visitors + "&nbsp</p>" +
         "</div>"
 
@@ -417,8 +432,6 @@ const config = reactive({
           } else {
             confirmReservation(args.source.data.id)
             scheduler.message("Confirmed.");
-            // TODO BORRAR
-            console.log(schedulerStore)
           }
         }
       },
@@ -548,7 +561,7 @@ const updateColor = (e, color) => {
 };
 //delete reservation
 const deleteReservation = async (id) => {
-  const response = await axios.get('https://schedulerback.dasoddscolor.com/deleteReservation.php?id=' + id)
+  const response = await axios.get('https://schedulerback.dasoddscolor.com/deleteReservation.php?id=' + id + '&user=' + schedulerStore.user)
   const data = response.data
   getReservations();
 };
@@ -611,6 +624,17 @@ button:hover {
   cursor: pointer;
   margin-bottom: 10px;
 }
+
+.container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.center-text {
+  flex-grow: 1;
+  text-align: center;
+}
+
 
 
 </style>
