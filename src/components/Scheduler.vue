@@ -136,26 +136,32 @@ const config = reactive({
       commentary: "",
       id: 1204
     };
-    let modal = await DayPilot.Modal.form(form, data);
-    scheduler.clearSelection();
+    const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name='+schedulerStore.user);
+    if (response.data === "ADMIN" || response.data === "PREOP") {
+      let modal = await DayPilot.Modal.form(form, data);
+      scheduler.clearSelection();
 
-    if (modal.canceled) {
-      return;
-    }
-    // test tomar datos de la tabla para insertar
-    else if (modal.result.start < modal.result.end) {
-      let start = modal.result.start.value;
-      let end = modal.result.end.value;
-      let apartment_ID = args.resource.replace('a', '')
-      let name = modal.result.name;
-      let comentary = modal.result.commentary;
-      let visitors = modal.result.visitors;
+      if (modal.canceled) {
+        return;
+      }
+      // test tomar datos de la tabla para insertar
+      else if (modal.result.start < modal.result.end) {
+        let start = modal.result.start.value;
+        let end = modal.result.end.value;
+        let apartment_ID = args.resource.replace('a', '')
+        let name = modal.result.name;
+        let comentary = modal.result.commentary;
+        let visitors = modal.result.visitors;
 
-      const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + schedulerStore.user+ '&crm=' + schedulerStore.crm + '&deal_id=' + schedulerStore.deal_id)
-      getReservations();
+        const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + schedulerStore.user + '&crm=' + schedulerStore.crm + '&deal_id=' + schedulerStore.deal_id)
+        getReservations();
 
-    } else {
-      DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
+      } else {
+        DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
+      }
+    }else {
+      DayPilot.Modal.alert("Access Denied");
+      scheduler.clearSelection();
     }
 
   },
@@ -246,23 +252,26 @@ const config = reactive({
       commentary: commentary,
       id: 1204
     };
+    const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name='+schedulerStore.user);
+    if (response.data === "ADMIN" || response.data === "PREOP") {
+      let modal = await DayPilot.Modal.form(form, old_data);
+      if (modal.canceled) {
+        return;
+      } else if (modal.result.start < modal.result.end) {
+        let id = args.e.data.id;
+        let name = modal.result.name;
+        let comentary = modal.result.commentary;
+        let visitors = modal.result.visitors;
+        let start = modal.result.start.value;
+        let end = modal.result.end.value;
 
-    let modal = await DayPilot.Modal.form(form, old_data);
-    if (modal.canceled) {
-      return;
-    }
-    else if (modal.result.start < modal.result.end) {
-      let id = args.e.data.id;
-      let name = modal.result.name;
-      let comentary = modal.result.commentary;
-      let visitors = modal.result.visitors;
-      let start = modal.result.start.value;
-      let end = modal.result.end.value;
-
-      const response = await axios.get('https://schedulerback.dasoddscolor.com/editReservation.php?id=' + id + '&name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&user=' + schedulerStore.user)
-      getReservations();
-    } else {
-      DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
+        const response = await axios.get('https://schedulerback.dasoddscolor.com/editReservation.php?id=' + id + '&name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&user=' + schedulerStore.user)
+        getReservations();
+      } else {
+        DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
+      }
+    }else {
+        DayPilot.Modal.alert("Access Denied");
     }
 
   },
@@ -450,7 +459,8 @@ const config = reactive({
           const e = args.source;
           const scheduler = schedulerRef.value?.control;
 
-
+          const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name='+schedulerStore.user);
+          if (response.data === "ADMIN"){
           const modal = await DayPilot.Modal.confirm("Are you sure you want to delete this reservation?");
           if (modal.canceled) {
             return;
@@ -458,6 +468,9 @@ const config = reactive({
             deleteReservation(args.source.data.id)
             scheduler.events.remove(e);
             scheduler.message("Deleted.");
+          }
+          }else {
+            const modal = await DayPilot.Modal.alert("Access Denied");
           }
         }
       },
@@ -537,10 +550,15 @@ const getPrettyTime = (time) => {
 }
 
 const updateApartment = async (id, status) => {
-  const response = await axios.get('https://schedulerback.dasoddscolor.com/updateApartment.php?id=' + id + '&status=' + status)
-  const data = response.data
-  getReservations();
-  schedulerStore.schedulerMain.message("The appartment is updated!");
+  const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name='+schedulerStore.user);
+  if (response.data === "ADMIN") {
+    const response = await axios.get('https://schedulerback.dasoddscolor.com/updateApartment.php?id=' + id + '&status=' + status)
+    const data = response.data
+    getReservations();
+    schedulerStore.schedulerMain.message("The apartment is updated!");
+  }else{
+    schedulerStore.schedulerMain.message("You Can't Update Apartments");
+  }
 }
 const sendReservation = async (event) => {
   axios.post('https://schedulerback.dasoddscolor.com/sendReservation.php',

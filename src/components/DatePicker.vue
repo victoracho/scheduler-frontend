@@ -68,8 +68,11 @@ export default {
         selectedBuild.value = "N/A";
         buildDisabled.value = true;
       }else {
-        selectedBuild.value = "N/A";
-        buildDisabled.value = false;
+        const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name='+schedulerStore.user);
+        if (response.data === "ADMIN" || response.data === "PREOP") {
+          selectedBuild.value = "N/A";
+          buildDisabled.value = false;
+        }
 
       }
       click.value = !click.value
