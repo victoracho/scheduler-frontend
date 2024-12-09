@@ -426,13 +426,20 @@ const config = reactive({
           const scheduler = schedulerRef.value?.control;
 
 
-          const modal = await DayPilot.Modal.confirm("Are you sure you want to Confirm this reservation?");
-          if (modal.canceled) {
-            return;
-          } else {
-            confirmReservation(args.source.data.id)
-            scheduler.message("Confirmed.");
+          const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name='+schedulerStore.user);
+
+          console.log(response.data);
+          if (response.data === "ADMIN"){
+            const modal = await DayPilot.Modal.confirm("Are you sure you want to Confirm this reservation?");
+            if (modal.canceled) {
+              return;
+            } else {
+              confirmReservation(args.source.data.id)
+            }
+          }else {
+            const modal = await DayPilot.Modal.alert("Access Denied");
           }
+
         }
       },
       {
