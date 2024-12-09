@@ -427,8 +427,6 @@ const config = reactive({
 
 
           const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name='+schedulerStore.user);
-
-          console.log(response.data);
           if (response.data === "ADMIN"){
             const modal = await DayPilot.Modal.confirm("Are you sure you want to Confirm this reservation?");
             if (modal.canceled) {

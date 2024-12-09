@@ -84,18 +84,30 @@ export default {
 
     const usedRoom = async (id) => {
       //console.log("in use")
-      if (id != null) {
-        const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmation.php?id=' + id + '&user=' + schedulerStore.user + '&status=CONFIRMED');
-        //await fetchOptions()
-        await DayPilot.Modal.alert("Room Confirmed as In Use");
-        location.reload();
+
+      const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name='+schedulerStore.user);
+
+      if (response.data === "ADMIN" || response.data === "SERVICE") {
+        if (id != null) {
+          const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmation.php?id=' + id + '&user=' + schedulerStore.user + '&status=CONFIRMED');
+          //await fetchOptions()
+          await DayPilot.Modal.alert("Room Confirmed as In Use");
+          location.reload();
+        } else {
+          await DayPilot.Modal.alert("ERROR: Please Select a Reservation to confirm");
+        }
       }else {
-        await DayPilot.Modal.alert("ERROR: Please Select a Reservation to confirm");
+        const modal = await DayPilot.Modal.alert("Access Denied");
       }
 
     }
 
     const empityRoom = async (id) => {
+
+     const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name='+schedulerStore.user);
+
+     if (response.data === "ADMIN" || response.data === "SERVICE") {
+
       if (id != null){
         const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmation.php?id=' + id + '&user=' + schedulerStore.user + '&status=EMPITY');
         console.log(id)
@@ -105,6 +117,9 @@ export default {
       }else {
         await DayPilot.Modal.alert("ERROR: Please Select a Reservation to confirm");
       }
+     }else {
+       const modal = await DayPilot.Modal.alert("Access Denied");
+     }
 
     }
 
