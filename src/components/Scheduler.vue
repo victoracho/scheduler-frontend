@@ -127,7 +127,6 @@ const config = reactive({
       { name: "End Date", id: "end", type: 'datetime' },
       { name: "Commentary", id: "commentary", onValidate: validateTextRequired },
     ];
-
     let data = {
       name: schedulerStore.patient_name,
       visitors: "1",
@@ -275,9 +274,10 @@ const config = reactive({
     }
 
   },
+
   eventHoverHandling: "Bubble",
   bubble: new DayPilot.Bubble({
-    onLoad: function (args) {
+    onLoad: async function (args) {
       let start_date = new Date(args.source.data.start);
       let start = start_date.toDateString();
       let start_pt = getPrettyTime(start_date)
@@ -291,34 +291,34 @@ const config = reactive({
       }
 
       let link = "";
-      if (args.source.data.crm === "DASO"){
-        link = "<a href=\"https://daso.dds.miami/crm/deal/details/"+args.source.data.deal_id +"/\" target=\"_blank\">" + args.source.data.deal_id + "&nbsp</a>";
+      if (args.source.data.crm === "DASO") {
+        link = "<a href=\"https://daso.dds.miami/crm/deal/details/" + args.source.data.deal_id + "/\" target=\"_blank\">" + args.source.data.deal_id + "&nbsp</a>";
       }
-      if (args.source.data.crm === "DDS"){
-        link = "<a href=\"https://dds.miami/crm/deal/details/"+args.source.data.deal_id +"/\" target=\"_blank\">" + args.source.data.deal_id + "&nbsp</a>";
+      if (args.source.data.crm === "DDS") {
+        link = "<a href=\"https://dds.miami/crm/deal/details/" + args.source.data.deal_id + "/\" target=\"_blank\">" + args.source.data.deal_id + "&nbsp</a>";
       }
-      if (args.source.data.crm === "ECL"){
-        link = "<a href=\"https://crm.eyescolorlab.com/crm/deal/details/"+args.source.data.deal_id +"/\" target=\"_blank\">" + args.source.data.deal_id + "&nbsp</a>";
+      if (args.source.data.crm === "ECL") {
+        link = "<a href=\"https://crm.eyescolorlab.com/crm/deal/details/" + args.source.data.deal_id + "/\" target=\"_blank\">" + args.source.data.deal_id + "&nbsp</a>";
       }
 
-      args.html =
-        "<div class='bubble'>" +
-        "<p>&nbsp<b>Name:</b> " + args.source.data.name + "&nbsp</p>" +
-        "<p>&nbsp<b>Status:</b> " + args.source.data.status + "&nbsp</p>" +
-        "<p>&nbsp<b>Start Date:</b> " + start + " " + start_pt + "&nbsp</p>" +
-        "<p>&nbsp<b>End Date: </b>" + end + " " + end_pt + "&nbsp</p>" +
-        "<p>&nbsp<b>Created by: </b>" + args.source.data.user_created + "&nbsp</p>" +
-        "<p>&nbsp<b>Created on: </b>" + date_created + "&nbsp</p>" +
-        "<p>&nbsp<b>Commentary: </b>" + args.source.data.text + "&nbsp</p>" +
-        "<p>&nbsp<b>Modified by: </b>" + args.source.data.user_modified + "&nbsp</p>" +
-        "<p>&nbsp<b>Modified on: </b>" + date_modified + "&nbsp</p>" +
-        "<p>&nbsp<b>CRM: </b>" + args.source.data.crm + "&nbsp</p>" +
-        "<b>&nbspDEAL ID: </b>" + link +
-        "<p>&nbsp<b>Visitors: </b>" + args.source.data.visitors + "&nbsp</p>" +
-        "</div>"
+        args.html =
+            "<div class='bubble'>" +
+            "<p>&nbsp<b>Name:</b> " + args.source.data.name + "&nbsp</p>" +
+            "<p>&nbsp<b>Status:</b> " + args.source.data.status + "&nbsp</p>" +
+            "<p>&nbsp<b>Start Date:</b> " + start + " " + start_pt + "&nbsp</p>" +
+            "<p>&nbsp<b>End Date: </b>" + end + " " + end_pt + "&nbsp</p>" +
+            "<p>&nbsp<b>Created by: </b>" + args.source.data.user_created + "&nbsp</p>" +
+            "<p>&nbsp<b>Created on: </b>" + date_created + "&nbsp</p>" +
+            "<p>&nbsp<b>Commentary: </b>" + args.source.data.text + "&nbsp</p>" +
+            "<p>&nbsp<b>Modified by: </b>" + args.source.data.user_modified + "&nbsp</p>" +
+            "<p>&nbsp<b>Modified on: </b>" + date_modified + "&nbsp</p>" +
+            "<p>&nbsp<b>CRM: </b>" + args.source.data.crm + "&nbsp</p>" +
+            "<b>&nbspDEAL ID: </b>" + link +
+            "<p>&nbsp<b>Visitors: </b>" + args.source.data.visitors + "&nbsp</p>" +
+            "</div>"
 
         ;
-    }
+      }
   }),
 
   treeEnabled: true,
@@ -442,11 +442,51 @@ const config = reactive({
               return;
             } else {
               confirmReservation(args.source.data.id)
+              scheduler.message("RESERVATION CONFIRMED.");
             }
           }else {
             const modal = await DayPilot.Modal.alert("Access Denied");
           }
 
+        }
+      },
+      {
+        text: "-"
+      },
+      {
+        icon: "fa-solid fa-key",
+        text: "Send Room Code",
+        onClick: async args => {
+          const e = args.source;
+          const scheduler = schedulerRef.value?.control;
+
+          const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name='+schedulerStore.user);
+          if (response.data === "ADMIN"){
+            function validateTextRequired(args) {
+              let value = args.value || "";
+              if (value.trim().length === 0) {
+                args.valid = false;
+                args.message = "Text required";
+              }
+            }
+            let form = [
+              { name: "ROOM CODE: ", id: "code", onValidate: validateTextRequired },
+            ];
+            let data = {
+              code: args.source.data.code,
+            };
+            let modal = await DayPilot.Modal.form(form, data);
+
+          if (modal.canceled) {
+            return;
+          } else {
+            console.log(modal.result.code)
+            sendCode(args.source.data.id, modal.result.code, args.source.data.crm, args.source.data.deal_id)
+            scheduler.message("CODE SENT.");
+          }
+          }else {
+            const modal = await DayPilot.Modal.alert("Access Denied");
+          }
         }
       },
       {
@@ -461,14 +501,14 @@ const config = reactive({
 
           const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name='+schedulerStore.user);
           if (response.data === "ADMIN"){
-          const modal = await DayPilot.Modal.confirm("Are you sure you want to delete this reservation?");
-          if (modal.canceled) {
-            return;
-          } else {
-            deleteReservation(args.source.data.id)
-            scheduler.events.remove(e);
-            scheduler.message("Deleted.");
-          }
+            const modal = await DayPilot.Modal.confirm("Are you sure you want to delete this reservation?");
+            if (modal.canceled) {
+              return;
+            } else {
+              deleteReservation(args.source.data.id)
+              scheduler.events.remove(e);
+              scheduler.message("Deleted.");
+            }
           }else {
             const modal = await DayPilot.Modal.alert("Access Denied");
           }
@@ -595,6 +635,11 @@ const confirmReservation = async (id) => {
   getReservations();
 };
 
+const sendCode = async (id, code, crm, deal_id) => {
+  const response = await axios.get('https://schedulerback.dasoddscolor.com/sendCode.php?id=' + id + '&code=' + code + '&crm=' + crm + '&deal_id=' + deal_id )
+  const data = response.data
+  getReservations();
+};
 
 //  dependiendo de la hora el time header lo convierte en manana o tarde
 onMounted(async () => {
