@@ -1,18 +1,11 @@
 <template>
   <div class="radio-list">
     <h2>CONFIRMATIONS:</h2>
-    <button :disabled="buttonDisabled" @click="fetchOptions">Update 🔄</button>
     <b>Today Reservations:</b>
     <div v-for="(option, index) in options" :key="index" class="radio-item">
-      <input
-          type="radio"
-          :id="`option-${index}`"
-          :value="option"
-          v-model="selectedOption"
-          @change="handleSelection(option)"
-          name="radioGroup"
-      />
-      <label :for="`option-${index}`">{{ option[0].data[0].name +" - "+ option[0].data[0].crm}}</label>
+      <input type="radio" :id="`option-${index}`" :value="option" v-model="selectedOption"
+        @change="handleSelection(option)" name="radioGroup" />
+      <label :for="`option-${index}`">{{ option[0].data[0].name + " - " + option[0].data[0].crm }}</label>
     </div>
     <button :disabled="buttonDisabled" @click="usedRoom(id)">Room in Use</button>
     <button :disabled="buttonDisabled" @click="empityRoom(id)">Empty Room</button>
@@ -22,8 +15,8 @@
 <script>
 import { ref, onMounted } from 'vue';
 import axios from "axios";
-import {useSchedulerStore} from "@/store/scheduler";
-import {DayPilot} from "daypilot-pro-vue";
+import { useSchedulerStore } from "@/store/scheduler";
+import { DayPilot } from "daypilot-pro-vue";
 
 export default {
   name: 'RadioGroupComponent',
@@ -53,30 +46,32 @@ export default {
           const response = await axios.get('https://schedulerback.dasoddscolor.com/getReservation.php?id=' + id);
           const array = [response, item];
           options.value.push(array);
-
+          schedulerStore.getReservations()
+          schedulerStore.generateTimeline()
+          schedulerStore.scrollToToday()
           //options.value.push(item);
           //schedulerStore.schedulerMain.update()
         }
         //console.log(options)
       } catch (error) {
         console.error('Failed to fetch options:', error);
-      }finally {
+      } finally {
         buttonDisabled.value = false;
       }
     };
 
     // Log currently selected option
     const handleSelection = (option) => {
-      schedulerStore.schedulerMain.message("Selected "+ option[0].data[0].comentary);
+      schedulerStore.schedulerMain.message("Selected " + option[0].data[0].comentary);
       schedulerStore.schedulerMain.scrollTo(option[0].data[0].start);
       let events = schedulerStore.schedulerMain.events.list
       id.value = option[1].id
       //id.value.push(option[1].id)
 
       for (let i = 0; i < events.length; i++) {
-        if (option[0].data[0].id == events[i].id){
+        if (option[0].data[0].id == events[i].id) {
           events[i].status = "Selected"
-        }else {
+        } else {
           events[i].status = "reserved"
         }
       }
@@ -85,18 +80,17 @@ export default {
     const usedRoom = async (id) => {
       //console.log("in use")
 
-      const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name='+schedulerStore.user);
+      const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name=' + schedulerStore.user);
 
       if (response.data === "ADMIN" || response.data === "SERVICE") {
         if (id != null) {
           const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmation.php?id=' + id + '&user=' + schedulerStore.user + '&status=CONFIRMED');
-          //await fetchOptions()
+          await fetchOptions()
           await DayPilot.Modal.alert("Room Confirmed as In Use");
-          location.reload();
         } else {
           await DayPilot.Modal.alert("ERROR: Please Select a Reservation to confirm");
         }
-      }else {
+      } else {
         const modal = await DayPilot.Modal.alert("Access Denied");
       }
 
@@ -104,25 +98,23 @@ export default {
 
     const empityRoom = async (id) => {
 
-     const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name='+schedulerStore.user);
+      const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name=' + schedulerStore.user);
 
-     if (response.data === "ADMIN" || response.data === "SERVICE") {
+      if (response.data === "ADMIN" || response.data === "SERVICE") {
 
-      if (id != null){
-        const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmation.php?id=' + id + '&user=' + schedulerStore.user + '&status=EMPITY');
-        console.log(id)
-        //await fetchOptions()
-        await DayPilot.Modal.alert("Room Confirmed as Empty");
-        location.reload();
-      }else {
-        await DayPilot.Modal.alert("ERROR: Please Select a Reservation to confirm");
+        if (id != null) {
+          const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmation.php?id=' + id + '&user=' + schedulerStore.user + '&status=EMPITY');
+          console.log(id)
+          await fetchOptions()
+          await DayPilot.Modal.alert("Room Confirmed as Empty");
+        } else {
+          await DayPilot.Modal.alert("ERROR: Please Select a Reservation to confirm");
+        }
+      } else {
+        const modal = await DayPilot.Modal.alert("Access Denied");
       }
-     }else {
-       const modal = await DayPilot.Modal.alert("Access Denied");
-     }
 
     }
-
 
     // Fetch options on component mount
     onMounted(fetchOptions);
@@ -153,7 +145,8 @@ export default {
   gap: 8px;
   padding: 16px;
   text-align: center;
-  border: 2px solid #ccc; /* Adds a border around the component */
+  border: 2px solid #ccc;
+  /* Adds a border around the component */
   border-radius: 8px;
 
 }
@@ -177,7 +170,4 @@ button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
-
-
 </style>
-

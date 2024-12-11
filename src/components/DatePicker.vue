@@ -1,15 +1,8 @@
 <template>
-    <div class="minicalendar">
-    <VDatePicker
-        v-model.range="range"
-        :initial-page="{ month: todayMonth, year: todayYear }"
-        :borderless = true
-        :color="selectedColor"
-        :attributes="attrs"
-        @drag="handleDrag"
-        @dayclick="handleClick"
-        :disabled-dates="disabledDates"
-    />
+  <div class="minicalendar">
+    <VDatePicker v-model.range="range" :initial-page="{ month: todayMonth, year: todayYear }" :borderless=true
+      :color="selectedColor" :attributes="attrs" @drag="handleDrag" @dayclick="handleClick"
+      :disabled-dates="disabledDates" />
     <div class="container">
       <select name="options" id="options" @change="handleBuildChange" v-model="selectedBuild" :disabled="buildDisabled">
         <option :value="'N/A'">N/A</option>
@@ -27,14 +20,14 @@
 <script>
 import { ref } from 'vue';
 //import {useSchedulerStore} from "@/store/scheduler";
-import {DayPilot} from "daypilot-pro-vue";
+import { DayPilot } from "daypilot-pro-vue";
 import axios from "axios";
-import {useSchedulerStore} from "@/store/scheduler";
+import { useSchedulerStore } from "@/store/scheduler";
 import Scheduler from "@/components/Scheduler.vue";
 
 
 const selectedColor = ref('orange');
-const todayMonth = ref(new Date().getMonth()+1);
+const todayMonth = ref(new Date().getMonth() + 1);
 const todayYear = ref(new Date().getFullYear());
 const attrs = ref([]);
 let start = ref(new Date());
@@ -53,22 +46,18 @@ const yesterday = new Date();
 yesterday.setDate(today.getDate() - 1);
 const disabledDates = ref([{ start: null, end: yesterday }]);
 
-
-
 export default {
-
   name: "App",
   setup() {
     const schedulerStore = useSchedulerStore();
-
     const handleClick = async (day) => {
-      if (click.value === true){
+      if (click.value === true) {
         selectedItem.value = "N/A";
         isDisabled.value = true;
         selectedBuild.value = "N/A";
         buildDisabled.value = true;
-      }else {
-        const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name='+schedulerStore.user);
+      } else {
+        const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name=' + schedulerStore.user);
         if (response.data === "ADMIN" || response.data === "PREOP") {
           selectedBuild.value = "N/A";
           buildDisabled.value = false;
@@ -80,18 +69,18 @@ export default {
 
     const handleDrag = async (day) => {
       start.value = day.start
-      end.value  = day.end
+      end.value = day.end
     }
 
-    const handleSelectionChange = async =>{
-      if (selectedItem.value === "N/A"){
+    const handleSelectionChange = async => {
+      if (selectedItem.value === "N/A") {
         buttonDisabled.value = true;
-      }else{
+      } else {
         buttonDisabled.value = false;
       }
     }
 
-    function formatDate(date){
+    function formatDate(date) {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
       const day = String(date.getDate()).padStart(2, "0");
@@ -115,7 +104,7 @@ export default {
           options.value = response.data;
         } catch (error) {
           console.error('Failed to fetch options:', error);
-        }finally {
+        } finally {
           isDisabled.value = false;
         }
 
@@ -174,7 +163,7 @@ export default {
         id: 1204
       };
 
-        let modal = await DayPilot.Modal.form(form, data);
+      let modal = await DayPilot.Modal.form(form, data);
       if (modal.canceled) {
         return;
       }
@@ -187,7 +176,9 @@ export default {
         let visitors = modal.result.visitors;
 
         const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + schedulerStore.user + '&crm=' + schedulerStore.crm + '&deal_id=' + schedulerStore.deal_id)
-        location.reload();
+        schedulerStore.getReservations()
+        schedulerStore.generateTimeline()
+        schedulerStore.scrollToToday()
       } else {
         DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
       }
@@ -218,17 +209,18 @@ export default {
 </script>
 
 <style scoped>
-
 .minicalendar {
   text-align: center;
-  border: 2px solid #ccc; /* Adds a border around the component */
+  border: 2px solid #ccc;
+  /* Adds a border around the component */
   border-radius: 8px;
 }
 
 .buttons {
   padding: 10px 15px;
   background-color: #ea580c;
-  color: white; border: none;
+  color: white;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
   margin-bottom: 20px;
@@ -237,7 +229,8 @@ export default {
 .container {
   display: flex;
   align-items: stretch;
-  gap: 5px; /* Space between select and button */
+  gap: 5px;
+  /* Space between select and button */
   justify-content: center;
   margin-bottom: 10px;
 }
@@ -263,6 +256,4 @@ button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
-
 </style>
-
