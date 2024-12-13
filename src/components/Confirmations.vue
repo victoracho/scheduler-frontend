@@ -87,6 +87,9 @@ export default {
           const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmation.php?id=' + id + '&user=' + schedulerStore.user + '&status=CONFIRMED');
           await fetchOptions()
           await DayPilot.Modal.alert("Room Confirmed as In Use");
+          schedulerStore.getReservations()
+          schedulerStore.generateTimeline()
+          schedulerStore.scrollToToday()
         } else {
           await DayPilot.Modal.alert("ERROR: Please Select a Reservation to confirm");
         }
@@ -104,9 +107,12 @@ export default {
 
         if (id != null) {
           const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmation.php?id=' + id + '&user=' + schedulerStore.user + '&status=EMPITY');
-          console.log(id)
+          //console.log(id)
           await fetchOptions()
           await DayPilot.Modal.alert("Room Confirmed as Empty");
+          schedulerStore.getReservations()
+          schedulerStore.generateTimeline()
+          schedulerStore.scrollToToday()
         } else {
           await DayPilot.Modal.alert("ERROR: Please Select a Reservation to confirm");
         }
