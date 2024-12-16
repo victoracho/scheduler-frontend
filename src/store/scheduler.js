@@ -126,8 +126,9 @@ export const useSchedulerStore = defineStore('scheduler', () => {
     getReservations();
   };
 
-  const sendCode = async (id, code, crm, deal_id) => {
-    const response = await axios.get('https://schedulerback.dasoddscolor.com/sendCode.php?id=' + id + '&code=' + code + '&crm=' + crm + '&deal_id=' + deal_id)
+  //TODO
+  const sendCode = async (id, code, crm, deal_id,start, end, apt) => {
+    const response = await axios.get('https://schedulerback.dasoddscolor.com/sendCode.php?id=' + id + '&code=' + code + '&crm=' + crm + '&deal_id=' + deal_id + '&start=' + start + '&end=' + end + '&apt=' + apt)
     const data = response.data
     getReservations();
   };
@@ -564,6 +565,8 @@ export const useSchedulerStore = defineStore('scheduler', () => {
           text: "Send Room Code",
           onClick: async args => {
             const e = args.source;
+            // TODO
+            console.log(args.source.data)
             const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name=' + user);
             if (response.data === "ADMIN") {
               function validateTextRequired(args) {
@@ -584,8 +587,9 @@ export const useSchedulerStore = defineStore('scheduler', () => {
               if (modal.canceled) {
                 return;
               } else {
-                console.log(modal.result.code)
-                sendCode(args.source.data.id, modal.result.code, args.source.data.crm, args.source.data.deal_id)
+                //console.log(modal.result.code)
+                let apt = args.source.data.resource.substring(1)
+                sendCode(args.source.data.id, modal.result.code, args.source.data.crm, args.source.data.deal_id,  args.source.data.start,  args.source.data.end, apt)
                 schedulerMain.value.message("CODE SENT.");
               }
             } else {
