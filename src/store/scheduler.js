@@ -120,15 +120,15 @@ export const useSchedulerStore = defineStore('scheduler', () => {
     getReservations();
   };
 
-  const confirmReservation = async (id) => {
-    const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmBooking.php?id=' + id + '&status=reserved')
+  const confirmReservation = async (id, crm, deal_id, start, end, apt) => {
+    const response = await axios.get('https://schedulerback.dasoddscolor.com/confirmBooking.php?id=' + id + '&status=reserved' + '&start=' + start + '&end=' + end + '&apt=' + apt + '&crm=' + crm + '&deal_id=' + deal_id)
     const data = response.data
     getReservations();
   };
 
   //TODO
-  const sendCode = async (id, code, crm, deal_id,start, end, apt) => {
-    const response = await axios.get('https://schedulerback.dasoddscolor.com/sendCode.php?id=' + id + '&code=' + code + '&crm=' + crm + '&deal_id=' + deal_id + '&start=' + start + '&end=' + end + '&apt=' + apt)
+  const sendCode = async (id, code, crm, deal_id, apt) => {
+    const response = await axios.get('https://schedulerback.dasoddscolor.com/sendCode.php?id=' + id + '&code=' + code + '&crm=' + crm + '&deal_id=' + deal_id + '&apt=' + apt)
     const data = response.data
     getReservations();
   };
@@ -548,7 +548,8 @@ export const useSchedulerStore = defineStore('scheduler', () => {
               if (modal.canceled) {
                 return;
               } else {
-                confirmReservation(args.source.data.id)
+                let apt = args.source.data.resource.substring(1)
+                confirmReservation(args.source.data.id, args.source.data.crm, args.source.data.deal_id,  args.source.data.start,  args.source.data.end, apt)
                 scheduler.message("RESERVATION CONFIRMED.");
               }
             } else {
@@ -589,7 +590,7 @@ export const useSchedulerStore = defineStore('scheduler', () => {
               } else {
                 //console.log(modal.result.code)
                 let apt = args.source.data.resource.substring(1)
-                sendCode(args.source.data.id, modal.result.code, args.source.data.crm, args.source.data.deal_id,  args.source.data.start,  args.source.data.end, apt)
+                sendCode(args.source.data.id, modal.result.code, args.source.data.crm, args.source.data.deal_id, apt)
                 schedulerMain.value.message("CODE SENT.");
               }
             } else {
