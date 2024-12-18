@@ -265,6 +265,9 @@ export const useSchedulerStore = defineStore('scheduler', () => {
           let visitors = modal.result.visitors;
 
           const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + user + '&crm=' + crm + '&deal_id=' + deal_id)
+          if (response.data.message.includes("Duplicate entry")){
+            DayPilot.Modal.alert("ERROR: This Patient already have a reservation for these days.");
+          }
           getReservations();
 
         } else {
