@@ -11,10 +11,10 @@
       <a v-if="schedulerStore.crm === 'ECL'" href="https://crm.eyescolorlab.com/devops/placement/34/" target="_blank" rel="noopener noreferrer">
         <button class="next" >Reservations Report</button>
       </a>
-      <a v-if="schedulerStore.crm === 'DASO'" href="https://crm.eyescolorlab.com/devops/placement/34/" target="_blank" rel="noopener noreferrer">
+      <a v-if="schedulerStore.crm === 'DASO'" href="https://daso.dds.miami/devops/placement/67/" target="_blank" rel="noopener noreferrer">
         <button class="next" >Reservations Report</button>
       </a>
-      <a v-if="schedulerStore.crm === 'DDS'" href="https://crm.eyescolorlab.com/devops/placement/34/" target="_blank" rel="noopener noreferrer">
+      <a v-if="schedulerStore.crm === 'DDS'" href="https://dds.miami/devops/placement/92/" target="_blank" rel="noopener noreferrer">
         <button class="next" >Reservations Report</button>
       </a>
 
