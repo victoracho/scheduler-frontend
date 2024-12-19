@@ -8,7 +8,13 @@
       <h3>Deal: {{ schedulerStore.deal_name }}</h3>
     </div>
     <div class="buttons">
-      <a href="/devops/placement/32" target="_blank" rel="noopener noreferrer">
+      <a v-if="schedulerStore.crm === 'ECL'" href="https://crm.eyescolorlab.com/devops/placement/34/" target="_self" rel="noopener noreferrer">
+        <button class="next" >Reservations Report</button>
+      </a>
+      <a v-if="schedulerStore.crm === 'DASO'" href="https://crm.eyescolorlab.com/devops/placement/34/" target="_blank" rel="noopener noreferrer">
+        <button class="next" >Reservations Report</button>
+      </a>
+      <a v-if="schedulerStore.crm === 'DDS'" href="https://crm.eyescolorlab.com/devops/placement/34/" target="_blank" rel="noopener noreferrer">
         <button class="next" >Reservations Report</button>
       </a>
 
