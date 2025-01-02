@@ -5,7 +5,7 @@
     <div v-for="(option, index) in options" :key="index" class="radio-item">
       <input type="radio" :id="`option-${index}`" :value="option" v-model="selectedOption"
         @change="handleSelection(option)" name="radioGroup" />
-      <label :for="`option-${index}`">{{ option[0].data[0].name + " - " + option[0].data[0].crm }}</label>
+      <label :for="`option-${index}`">{{ option.name + " - Apt: " + option.apartment + " " + option.color}}</label>
     </div>
     <button :disabled="buttonDisabled" @click="usedRoom(id)">Room in Use</button>
     <button :disabled="buttonDisabled" @click="empityRoom(id)">Empty Room</button>
@@ -39,8 +39,13 @@ export default {
       try {
         options.value = []
         const response = await axios.get('https://schedulerback.dasoddscolor.com/todayconfirmations.php');
+        //TODO
+        //const response = await axios.get('http://localhost/scheduler-backend/todayconfirmations.php');
         let confirms = response.data.reservations;
-
+        //console.log(confirms)
+        options.value = confirms;
+        //console.log(options.value)
+        /*
         for (const item of confirms) {
           let id = item.reservation;
           const response = await axios.get('https://schedulerback.dasoddscolor.com/getReservation.php?id=' + id);
@@ -49,20 +54,23 @@ export default {
           schedulerStore.getReservations()
           schedulerStore.generateTimeline()
           schedulerStore.scrollToToday()
+
+          console.log(options.value)
           //options.value.push(item);
           //schedulerStore.schedulerMain.update()
         }
+        */
         //console.log(options)
       } catch (error) {
         console.error('Failed to fetch options:', error);
       } finally {
-        buttonDisabled.value = false;
+          buttonDisabled.value = false;
       }
     };
 
     // Log currently selected option
     const handleSelection = (option) => {
-      schedulerStore.schedulerMain.message("Selected " + option[0].data[0].comentary);
+      schedulerStore.schedulerMain.message("Selected " + option[0].data[0].name);
       schedulerStore.schedulerMain.scrollTo(option[0].data[0].start);
       let events = schedulerStore.schedulerMain.events.list
       id.value = option[1].id

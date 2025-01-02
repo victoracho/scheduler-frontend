@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div class="buttons">
-      <button class="previous" v-on:click="schedulerStore.previous">Previous</button>
-      <button class="next" v-on:click="schedulerStore.next">Next</button>
+      <button class="previous" v-on:click="previous">Previous</button>
+      <button class="next" v-on:click="next">Next</button>
     </div>
     <div class="center-text">
       <h3>Deal: {{ schedulerStore.deal_name }}</h3>
@@ -35,6 +35,20 @@ const currentUser = ref(null);
 const deal_id = ref(null);
 const crm = ref(null);
 const schedulerStore = useSchedulerStore()
+
+const previous = () => {
+  schedulerStore.config.startDate = schedulerStore.config.startDate.addMonths(-1);
+  schedulerStore.config.days = schedulerStore.config.startDate.daysInMonth();
+  schedulerStore.generateTimeline();
+  schedulerStore.getReservations();
+};
+
+const next = () => {
+  schedulerStore.config.startDate = schedulerStore.config.startDate.addMonths(1);
+  schedulerStore.config.days = schedulerStore.config.startDate.daysInMonth();
+  schedulerStore.generateTimeline();
+  schedulerStore.getReservations();
+};
 
 
 //  dependiendo de la hora el time header lo convierte en manana o tarde
