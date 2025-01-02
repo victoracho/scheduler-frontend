@@ -59,9 +59,12 @@ export default {
       } else {
         const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name=' + schedulerStore.user);
         if (response.data === "ADMIN" || response.data === "PREOP") {
-          selectedBuild.value = "N/A";
-          buildDisabled.value = false;
+          if (schedulerStore.deal_id !== ""){
+            selectedBuild.value = "N/A";
+            buildDisabled.value = false;
+          }
         }
+
 
       }
       click.value = !click.value
@@ -162,7 +165,6 @@ export default {
         commentary: "",
         id: 1204
       };
-
       let modal = await DayPilot.Modal.form(form, data);
       if (modal.canceled) {
         return;
@@ -179,6 +181,11 @@ export default {
         schedulerStore.getReservations()
         schedulerStore.generateTimeline()
         schedulerStore.scrollToToday()
+
+        if (response.data.message.includes("Duplicate entry")){
+          DayPilot.Modal.alert("ERROR: This Patient already have a reservation for these days.");
+        }
+
       } else {
         DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
       }

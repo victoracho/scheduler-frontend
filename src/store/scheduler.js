@@ -91,23 +91,7 @@ export const useSchedulerStore = defineStore('scheduler', () => {
       schedulerMain.value.message("You Can't Update Apartments");
     }
   }
-  const sendReservation = async (event) => {
-    axios.post('https://schedulerback.dasoddscolor.com/sendReservation.php',
-      {
-        event: event,
-        user: currentUser.value,
-        deal_id: deal_id.value,
-      },
-      {
-        headers: { 'Content-Type': 'application/json' },
-      })
-      .then(function(response) {
-        schedulerMain.value.message("The reservation was made!");
-      })
-      .catch(() => {
-        schedulerMain.value.message("An unexpected error occured!");
-      })
-  }
+
   const updateColor = (e, color) => {
     e.data.color = color;
     schedulerMain.value.events.update(e);
@@ -249,9 +233,13 @@ export const useSchedulerStore = defineStore('scheduler', () => {
       };
       const response = await axios.get('https://schedulerback.dasoddscolor.com/checkPermissions.php?name=' + user);
       if (response.data === "ADMIN" || response.data === "PREOP") {
+        if (deal_id === ""){
+          DayPilot.Modal.alert("ERROR: You have to select a Deal to make a reservation.");
+          schedulerMain.value.clearSelection();
+          return;
+        }
         let modal = await DayPilot.Modal.form(form, data);
         schedulerMain.value.clearSelection();
-
         if (modal.canceled) {
           return;
         }
@@ -265,6 +253,7 @@ export const useSchedulerStore = defineStore('scheduler', () => {
           let visitors = modal.result.visitors;
 
           const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + user + '&crm=' + crm + '&deal_id=' + deal_id)
+          //const response = await axios.get('http://localhost/scheduler-backend/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + user + '&crm=' + crm + '&deal_id=' + deal_id)
           if (response.data.message.includes("Duplicate entry")){
             DayPilot.Modal.alert("ERROR: This Patient already have a reservation for these days.");
           }
