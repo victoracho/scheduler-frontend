@@ -490,8 +490,9 @@ export const useSchedulerStore = defineStore('scheduler', () => {
       // cambiar color por status
       if (args.data.status === "reserved") {
         args.data.backColor = "#93c47d";
-        //args.data.name = "🔴 " + args.data.name;
-        //args.data.name = "🔵 " + args.data.name;
+        if (args.data.code != null){
+          args.data.backColor = "#a0c1ed";
+        }
       } else if (args.data.status === "prebooked") {
         args.data.backColor = "#f1c232";
       } else if (args.data.status === "Selected") {

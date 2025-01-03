@@ -70,14 +70,15 @@ export default {
 
     // Log currently selected option
     const handleSelection = (option) => {
-      schedulerStore.schedulerMain.message("Selected " + option[0].data[0].name);
-      schedulerStore.schedulerMain.scrollTo(option[0].data[0].start);
+      schedulerStore.schedulerMain.message("Selected " + option.name);
+      schedulerStore.schedulerMain.scrollTo(option.start);
       let events = schedulerStore.schedulerMain.events.list
-      id.value = option[1].id
+      id.value = option.id
       //id.value.push(option[1].id)
 
       for (let i = 0; i < events.length; i++) {
-        if (option[0].data[0].id == events[i].id) {
+        console.log(events[i])
+        if (option.reservation == events[i].id) {
           events[i].status = "Selected"
         } else {
           events[i].status = "reserved"
