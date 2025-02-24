@@ -8,6 +8,7 @@
         <option :value="'N/A'">N/A</option>
         <option :value="1">2268 NW</option>
         <option :value="2">N. Miami</option>
+        <option :value="3">971 W Flagler</option>
       </select>
       <select name="options" id="options" v-model="selectedItem" @change="handleSelectionChange" :disabled="isDisabled">
         <option v-for="(option, index) in options" :key="index" :value="option"> Apt-{{ option }}</option>
