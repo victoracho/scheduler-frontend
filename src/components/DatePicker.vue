@@ -11,7 +11,7 @@
         <option :value="3">971 W Flagler</option>
       </select>
       <select name="options" id="options" v-model="selectedItem" @change="handleSelectionChange" :disabled="isDisabled">
-        <option v-for="(option, index) in options" :key="index" :value="option"> Apt-{{ option }}</option>
+        <option v-for="(option, index) in options" :key="index" :value="option[0]"> Apt-{{ option[1] }}</option>
       </select>
       <button type="button" class="btn" :disabled="buttonDisabled" @click="Insert">Reserve</button>
     </div>
@@ -106,6 +106,7 @@ export default {
           isDisabled.value = true;
           const response = await axios.get('https://schedulerback.dasoddscolor.com/getAvailablesApartments.php?build=' + selectedBuild.value + '&start=' + start_only_date + '&end=' + end_only_date);
           options.value = response.data;
+          //console.log(response.data)
         } catch (error) {
           console.error('Failed to fetch options:', error);
         } finally {
