@@ -488,13 +488,12 @@ export const useSchedulerStore = defineStore('scheduler', () => {
     // render enventos en calendario
     onBeforeEventRender: args => {
       // cambiar color por status
-      if (args.data.status === "reserved") {
+      if (args.data.crm === "DASO") {
         args.data.backColor = "#93c47d";
-        if (args.data.code != null){
-          args.data.backColor = "#a0c1ed";
-        }
-      } else if (args.data.status === "prebooked") {
+      } else if (args.data.crm === "DDS") {
         args.data.backColor = "#f1c232";
+      }else if (args.data.crm === "ECL"){
+        args.data.backColor = "#a0c1ed";
       } else if (args.data.status === "Selected") {
         args.data.backColor = "#a11236";
       } else {
