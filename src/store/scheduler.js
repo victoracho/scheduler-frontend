@@ -252,7 +252,19 @@ export const useSchedulerStore = defineStore('scheduler', () => {
           let comentary = modal.result.commentary;
           let visitors = modal.result.visitors;
 
-          const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + user + '&crm=' + crm + '&deal_id=' + deal_id)
+          //const response = await axios.get('https://schedulerback.dasoddscolor.com/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + user + '&crm=' + crm + '&deal_id=' + deal_id)
+          const url = `https://schedulerback.dasoddscolor.com/sendReservation.php`
+              + `?name=${encodeURIComponent(name)}`
+              + `&comentary=${encodeURIComponent(comentary)}`
+              + `&visitors=${encodeURIComponent(visitors)}`
+              + `&start=${encodeURIComponent(start)}`
+              + `&end=${encodeURIComponent(end)}`
+              + `&apartment_ID=${encodeURIComponent(apartment_ID)}`
+              + `&user=${encodeURIComponent(user)}`
+              + `&crm=${encodeURIComponent(crm)}`
+              + `&deal_id=${encodeURIComponent(deal_id)}`;
+
+          const response = await axios.get(url);
           //const response = await axios.get('http://localhost/scheduler-backend/sendReservation.php?name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&apartment_ID=' + apartment_ID + '&user=' + user + '&crm=' + crm + '&deal_id=' + deal_id)
           if (response.data.message.includes("Duplicate entry")){
             DayPilot.Modal.alert("ERROR: This Patient already have a reservation for these days.");
@@ -366,7 +378,18 @@ export const useSchedulerStore = defineStore('scheduler', () => {
           let start = modal.result.start.value;
           let end = modal.result.end.value;
 
-          const response = await axios.get('https://schedulerback.dasoddscolor.com/editReservation.php?id=' + id + '&name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&user=' + user)
+          //const response = await axios.get('https://schedulerback.dasoddscolor.com/editReservation.php?id=' + id + '&name=' + name + '&comentary=' + comentary + '&visitors=' + visitors + '&start=' + start + '&end=' + end + '&user=' + user)
+          const url =
+              'https://schedulerback.dasoddscolor.com/editReservation.php' +
+              '?id='          + encodeURIComponent(id) +
+              '&name='        + encodeURIComponent(name) +
+              '&comentary='   + encodeURIComponent(comentary) +
+              '&visitors='    + encodeURIComponent(visitors) +
+              '&start='       + encodeURIComponent(start) +
+              '&end='         + encodeURIComponent(end) +
+              '&user='        + encodeURIComponent(user);
+
+          const response = await axios.get(url);
           getReservations();
         } else {
           DayPilot.Modal.alert("ERROR: Ending Date can't be before Starting Date.");
