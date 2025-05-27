@@ -128,7 +128,7 @@ export const useSchedulerStore = defineStore('scheduler', () => {
       { groupBy: "Cell", format: () => getShiftLabel() }
     ],
     timeline: [],
-    heightSpec: "Parent100Pct",
+    heightSpec: "Max",
     eventHeight: 40,
     cellWidth: 80, // Ancho de cada celda
     //treeEnabled: false,
