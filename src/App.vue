@@ -14,6 +14,29 @@
       <div class="side-component" v-if="showSide">
         <DatePicker />
         <Confirmations />
+        <h2 align="center">Reports</h2>
+        <div class="buttons">
+          <a v-if="schedulerStore.crm === 'ECL'" href="https://crm.eyescolorlab.com/devops/placement//" target="_blank" rel="noopener noreferrer">
+            <button class="next" >Leaving Tomorrow</button>
+          </a>
+          <a v-if="schedulerStore.crm === 'DASO'" href="https://daso.dds.miami/marketplace/app/59/" target="_blank" rel="noopener noreferrer">
+            <button class="next" >Leaving Tomorrow</button>
+          </a>
+          <a v-if="schedulerStore.crm === 'DDS'" href="https://dds.miami/marketplace/app/51/" target="_blank" rel="noopener noreferrer">
+            <button class="next" >Leaving Tomorrow</button>
+          </a>
+        </div>
+        <div class="buttons">
+          <a v-if="schedulerStore.crm === 'ECL'" href="https://crm.eyescolorlab.com/devops/placement//" target="_blank" rel="noopener noreferrer">
+            <button class="next" >Today Available Apartments</button>
+          </a>
+          <a v-if="schedulerStore.crm === 'DASO'" href="https://daso.dds.miami/marketplace/app/58/" target="_blank" rel="noopener noreferrer">
+            <button class="next" >Today Available Apartments</button>
+          </a>
+          <a v-if="schedulerStore.crm === 'DDS'" href="https://dds.miami/marketplace/app/50/" target="_blank" rel="noopener noreferrer">
+            <button class="next" >Today Available Apartments</button>
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -58,6 +81,21 @@
   padding: 8px 12px;
   cursor: pointer;
 }
+.buttons {
+  display: flex;
+  gap: 8px;
+  padding: 5px;
+  text-align: center;
+  justify-content: center;
+}
+.next {
+  background-color: #04AA6D;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
 </style>
 
 <script setup>
@@ -65,12 +103,14 @@ import { ref } from 'vue'
 import Scheduler from './components/Scheduler.vue'
 import Confirmations from './components/Confirmations.vue';
 import DatePicker from "@/components/DatePicker.vue";
+import { useSchedulerStore } from '@/store/scheduler';
 
 const showSide = ref(true)
 const toggleSide = () => {
   showSide.value = !showSide.value
 }
 
+const schedulerStore = useSchedulerStore()
 
 </script>
 
