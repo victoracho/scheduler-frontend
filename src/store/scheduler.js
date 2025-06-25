@@ -440,6 +440,7 @@ export const useSchedulerStore = defineStore('scheduler', () => {
           "<p>&nbsp<b>CRM: </b>" + args.source.data.crm + "&nbsp</p>" +
           "<b>&nbspDEAL ID: </b>" + link +
           "<p>&nbsp<b>Visitors: </b>" + args.source.data.visitors + "&nbsp</p>" +
+          "<p>&nbsp<b>CODE: </b>" + args.source.data.code + "&nbsp</p>" +
           "</div>"
 
           ;
