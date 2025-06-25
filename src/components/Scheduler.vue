@@ -7,6 +7,7 @@
     <div class="center-text">
       <h3>Deal: {{ schedulerStore.deal_name }}</h3>
     </div>
+    <!--
     <div class="buttons">
       <a v-if="schedulerStore.crm === 'ECL'" href="https://crm.eyescolorlab.com/devops/placement/34/" target="_blank" rel="noopener noreferrer">
         <button class="next" >Reservations Report</button>
@@ -19,6 +20,7 @@
       </a>
 
     </div>
+    -->
   </div>
   <DayPilotScheduler :config="schedulerStore.config" ref="schedulerRef" />
 </template>
